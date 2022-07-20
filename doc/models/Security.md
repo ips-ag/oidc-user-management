@@ -1,3 +1,5 @@
+## Security model
+
 ```mermaid
 classDiagram
     class Permission {
@@ -36,3 +38,8 @@ classDiagram
         +Role Role
     }
 ```
+
+### User
+### Resource
+### Role
+### Permission
