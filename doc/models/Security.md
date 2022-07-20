@@ -3,9 +3,10 @@ classDiagram
     class Permission {
         +string Id
         +string Name
-        +Application Application
+        +string Description
+        +Resource Resource
     }
-    Application "1" *-- "*" Permission: Application
+    Resource "1" *-- "*" Permission: Resource
     Permission "1" <.. "*" PermissionAssignment: Permission
     class Role {
         +string Id
@@ -23,14 +24,7 @@ classDiagram
         +string Email
     }
     User "1" *-- "*" RoleAssignment: Roles
-    class Organization {
-        +string Id
-        +string Name
-    }
-    Organization "1" <.. "*" RoleAssignment: Organization
-    Organization "1" <.. "*" OrganizationAssignment: Organization
-    User "1" <.. "1..*" OrganizationAssignment: User
-    class Application {
+    class Resource {
         +string Id
         +string Name
         +string Description
@@ -40,11 +34,5 @@ classDiagram
         +string Id
         +User User
         +Role Role
-        +Organization Organization
-    }
-    class OrganizationAssignment {
-        +string Id
-        +User User
-        +Organization Organization
     }
 ```
