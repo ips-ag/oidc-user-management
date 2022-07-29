@@ -32,7 +32,6 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     actor UM as User Manager
-    participant RO as Roles
     participant U as Users
     UM->>U: createUser(name: "Bob", email: "bob@example.com")
     Note over U: users:full required
