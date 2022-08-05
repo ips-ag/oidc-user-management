@@ -27,15 +27,12 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: '6.x'
-      - name: Install dependencies
-        working-directory: ${{ env.SOURCE_LOCATION }}
-        run: dotnet restore
       - name: Test
         working-directory: ${{ env.SOURCE_LOCATION }}
-        run: dotnet test --no-restore --verbosity normal
+        run: dotnet test --verbosity normal
       - name: Publish
         working-directory: ${{ env.SOURCE_LOCATION }}/IPS.UserManagement
-        run: dotnet publish --configuration Release --no-restore -r linux-musl-x64 -o publish -p:PublishReadyToRun=true --no-self-contained
+        run: dotnet publish --configuration Release -r linux-musl-x64 -o publish -p:PublishReadyToRun=true --no-self-contained
       - name: Publish build artifact
         uses: actions/upload-artifact@v3
         with:
