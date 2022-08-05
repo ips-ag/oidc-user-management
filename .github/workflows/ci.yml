@@ -7,6 +7,14 @@ on:
     types: [ opened, synchronize, reopened ]
     branches:
       - main
+  workflow_call:
+    inputs:
+      buildConfiguration:
+        description: 'Configuration used for testing and publishing project'
+        default: 'Release'
+        required: false
+        type: string
+
 permissions:
   issues: write
   contents: read
@@ -14,6 +22,7 @@ permissions:
 
 env:
   SOURCE_LOCATION: "./src" # location of source code
+  PROJECT_LOCATION: "./src/IPS.UserManagement" # location of project to publish
 
 jobs:
   build:
@@ -29,14 +38,22 @@ jobs:
           dotnet-version: '6.x'
       - name: Test
         working-directory: ${{ env.SOURCE_LOCATION }}
-        run: dotnet test --verbosity normal
+        run: dotnet test **/*.Tests.csproj --verbosity normal --configuration ${{ inputs.buildConfiguration }} --logger:"trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: DotNET Tests
+          path: "**/test-results.trx"
+          reporter: dotnet-trx
+          fail-on-error: true
       - name: Publish
         working-directory: ${{ env.SOURCE_LOCATION }}/IPS.UserManagement
-        run: dotnet publish --configuration Release -r linux-musl-x64 -o publish -p:PublishReadyToRun=true --no-self-contained
-      - name: Publish build artifact
+        run: dotnet publish --configuration ${{ inputs.buildConfiguration }} -r linux-musl-x64 -o ${{ GITHUB_WORKSPACE }}/publish --no-self-contained
+      - name: Publish app bundle
         uses: actions/upload-artifact@v3
         with:
           name: app
-          path: ${{ env.SOURCE_LOCATION }}/IPS.UserManagement/publish
+          path: publish
           if-no-files-found: error
       
