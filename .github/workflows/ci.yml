@@ -1,0 +1,45 @@
+name: Build and test User Management
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    branches:
+      - main
+permissions:
+  issues: write
+  contents: read
+  pull-requests: write
+
+env:
+  SOURCE_LOCATION: "./src" # location of source code
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Setup .NET 6 SDK
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.x'
+      - name: Install dependencies
+        working-directory: ${{ env.SOURCE_LOCATION }}
+        run: dotnet restore
+      - name: Test
+        working-directory: ${{ env.SOURCE_LOCATION }}
+        run: dotnet test --no-restore --verbosity normal
+      - name: Publish
+        working-directory: ${{ env.SOURCE_LOCATION }}/IPS.UserManagement
+        run: dotnet publish --configuration Release --no-restore -r linux-musl-x64 -o publish -p:PublishReadyToRun=true --no-self-contained
+      - name: Publish build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: app
+          path: ${{ env.SOURCE_LOCATION }}/IPS.UserManagement/publish
+          if-no-files-found: error
+      
