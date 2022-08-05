@@ -49,7 +49,7 @@ jobs:
           fail-on-error: true
       - name: Publish
         working-directory: ${{ env.SOURCE_LOCATION }}/IPS.UserManagement
-        run: dotnet publish --configuration ${{ inputs.buildConfiguration }} -r linux-musl-x64 -o ${{ GITHUB_WORKSPACE }}/publish --no-self-contained
+        run: dotnet publish --configuration ${{ inputs.buildConfiguration }} -r linux-musl-x64 -o ${{ github.workspace }}/publish --no-self-contained
       - name: Publish app bundle
         uses: actions/upload-artifact@v3
         with:
