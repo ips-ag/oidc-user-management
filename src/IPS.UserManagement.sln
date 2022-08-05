@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPS.UserManagement.Tests", "IPS.UserManagement.Tests\IPS.UserManagement.Tests.csproj", "{EBC21730-F991-4EEC-A72E-72EC6A9F62C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,5 +25,9 @@ Global
 		{8E336018-67BD-470D-9C3E-3907EC4CAE31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E336018-67BD-470D-9C3E-3907EC4CAE31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E336018-67BD-470D-9C3E-3907EC4CAE31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBC21730-F991-4EEC-A72E-72EC6A9F62C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBC21730-F991-4EEC-A72E-72EC6A9F62C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBC21730-F991-4EEC-A72E-72EC6A9F62C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBC21730-F991-4EEC-A72E-72EC6A9F62C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
