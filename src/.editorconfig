@@ -184,6 +184,9 @@ csharp_preserve_single_line_statements = true
 # Resharper (https://www.jetbrains.com/help/rider/EditorConfig_Properties.html)
 ## Code Inspection
 resharper_class_never_instantiated_global_highlighting = none
+## Syntax Style
+resharper_csharp_for_built_in_types = use_var_when_evident
+csharp_namespace_body = file_scoped
 ## Line Breaks
 resharper_csharp_wrap_after_declaration_lpar = true
 resharper_csharp_wrap_parameters_style = chop_if_long
