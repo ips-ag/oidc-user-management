@@ -1,0 +1,55 @@
+name: Build and test User Management
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    branches:
+      - main
+
+permissions:
+  issues: write
+  contents: read
+  pull-requests: write
+  statuses: write
+  checks: write
+
+env:
+  BUILD_CONFIGURATION: Release
+  SOURCE_LOCATION: "./src" # location of source code
+  PROJECT_LOCATION: "./src/IPS.UserManagement" # location of project to publish
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Setup .NET 6 SDK
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.x'
+      - name: Test
+        working-directory: ${{ env.SOURCE_LOCATION }}
+        run: dotnet test **/*.Tests.csproj --verbosity normal --configuration ${{ env.BUILD_CONFIGURATION }} --logger:"trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Unit Tests
+          path: "**/test-results.trx"
+          reporter: dotnet-trx
+          fail-on-error: true
+      - name: Publish
+        working-directory: ${{ env.SOURCE_LOCATION }}/IPS.UserManagement
+        run: dotnet publish --configuration ${{ env.BUILD_CONFIGURATION }} -r linux-musl-x64 -o ${{ github.workspace }}/publish --no-self-contained
+      - name: Publish app bundle
+        uses: actions/upload-artifact@v3
+        with:
+          name: app
+          path: publish
+          if-no-files-found: error
+      
