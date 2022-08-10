@@ -1,3 +1,4 @@
+using IPS.UserManagement.Application.Extensions;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -14,6 +15,7 @@ try
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+    builder.Services.AddApplication();
 
     var app = builder.Build();
     if (app.Environment.IsDevelopment())
@@ -34,4 +36,6 @@ finally
     Log.CloseAndFlush();
 }
 
-public partial class Program { }
+public partial class Program
+{
+}

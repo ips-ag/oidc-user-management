@@ -1,10 +1,7 @@
-using IPS.UserManagement.Tests.Fixtures;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace IPS.UserManagement.Tests;
 
-public class HostTests : IClassFixture<HostFixture>
+[Collection(CollectionNames.Default)]
+public class HostTests
 {
     private readonly HostFixture _fixture;
 
@@ -20,5 +17,4 @@ public class HostTests : IClassFixture<HostFixture>
         // _fixture.Services.GetRequiredService<IConfiguration>();
         var client = _fixture.Client;
     }
-    
 }

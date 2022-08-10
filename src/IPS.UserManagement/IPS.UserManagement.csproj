@@ -12,6 +12,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\IPS.UserManagement.Application\IPS.UserManagement.Application.csproj" />
+  </ItemGroup>
+
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
