@@ -1,3 +1,4 @@
+using IPS.UserManagement;
 using IPS.UserManagement.Application.Extensions;
 using Serilog;
 
@@ -15,6 +16,12 @@ try
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+    builder.Services.AddIdentityServer()
+        .AddInMemoryClients(Config.GetClients())
+        .AddInMemoryIdentityResources(Config.GetIdentityResources())
+        .AddInMemoryApiScopes(Config.GetScopes())
+        .AddInMemoryApiResources(Config.GetApis());
+
     builder.Services.AddApplication();
 
     var app = builder.Build();
@@ -23,6 +30,8 @@ try
         app.UseSwagger();
         app.UseSwaggerUI();
     }
+    app.UseRouting();
+    app.UseIdentityServer();
     app.UseAuthorization();
     app.MapControllers();
     app.Run();
