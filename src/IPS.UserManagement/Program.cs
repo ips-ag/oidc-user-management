@@ -1,5 +1,8 @@
+using System.Net;
 using IPS.UserManagement;
 using IPS.UserManagement.Application.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -21,6 +24,41 @@ try
         .AddInMemoryIdentityResources(Config.GetIdentityResources())
         .AddInMemoryApiScopes(Config.GetScopes())
         .AddInMemoryApiResources(Config.GetApis());
+    builder.Services
+        .AddAuthentication(
+            auth =>
+            {
+                auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+        .AddJwtBearer(
+            options =>
+            {
+                options.Authority = "http://localhost:54321";
+                options.TokenValidationParameters = new TokenValidationParameters { ValidAudience = "usermanagement" };
+                options.RequireHttpsMetadata = false;
+                options.IncludeErrorDetails = true;
+                options.Events = new JwtBearerEvents
+                {
+                    OnChallenge = c =>
+                    {
+                        c.HandleResponse();
+                        if (!c.HttpContext.Response.HasStarted)
+                        {
+                            c.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        }
+                        return Task.CompletedTask;
+                    },
+                    OnAuthenticationFailed = c =>
+                    {
+                        c.NoResult();
+                        c.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        c.Response.ContentType = "text/plain";
+                        return c.Response.WriteAsync(
+                            $"An error occurred processing your authentication: {c.Exception.Message}");
+                    }
+                };
+            });
 
     builder.Services.AddApplication();
 

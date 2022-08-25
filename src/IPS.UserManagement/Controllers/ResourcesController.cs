@@ -9,7 +9,7 @@ public class ResourcesController : ControllerBase
     private IMediator Mediator => HttpContext.RequestServices.GetRequiredService<IMediator>();
 
     [HttpPost]
-    // [Authorize]
+    [Authorize]
     public async Task<IActionResult> CreateResource(CancellationToken cancel)
     {
         CreateResourceCommand command = new();

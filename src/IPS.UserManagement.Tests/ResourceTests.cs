@@ -19,8 +19,6 @@ public class ResourceTests
     public async Task ShouldCreateResource()
     {
         var token = new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token;
-        CreateResourceCommandModel commandModel = new();
-        var content = JsonContent.Create(commandModel);
         var client = _fixture.Client;
         var disco = await client.GetDiscoveryDocumentAsync(cancellationToken: token);
         Assert.False(disco.IsError, disco.Error);
@@ -35,6 +33,8 @@ public class ResourceTests
             cancellationToken: token);
         Assert.False(tokenResponse.IsError, tokenResponse.Error);
         client.SetBearerToken(tokenResponse.AccessToken);
+        CreateResourceCommandModel commandModel = new();
+        var content = JsonContent.Create(commandModel);
         var response = await client.PostAsync("resources", content, token);
         response.EnsureSuccessStatusCode();
         var model = response.Content.ReadFromJsonAsync<ResourceQueryModel>(cancellationToken: token);
