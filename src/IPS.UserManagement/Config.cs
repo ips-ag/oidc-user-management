@@ -44,17 +44,16 @@ public static class Config
     {
         return new[]
         {
-            new ApiScope("resources:read", new[] { "resources:read" }),
-            new ApiScope("resources:full", new[] { "resources:read", "resources:full" }),
-            new ApiScope("permissions:read", new[] { "permissions:read" }),
-            new ApiScope("permissions:full", new[] { "permissions:read", "permissions:full" }),
-            new ApiScope("roles:read", new[] { "roles:read" }),
-            new ApiScope("roles:full", new[] { "roles:read", "roles:full" }),
-            new ApiScope("permission-assignments:read", new[] { "permission-assignments:read" }), new ApiScope(
-                "permission-assignments:full",
-                new[] { "permission-assignments:read", "permission-assignments:full" }),
-            new ApiScope("role-assignments:read", new[] { "role-assignments:read" }),
-            new ApiScope("role-assignments:full", new[] { "role-assignments:read", "role-assignments:full" })
+            new ApiScope("resources:read"),
+            new ApiScope("resources:full"),
+            new ApiScope("permissions:read"),
+            new ApiScope("permissions:full"),
+            new ApiScope("roles:read"),
+            new ApiScope("roles:full"),
+            new ApiScope("permission-assignments:read"),
+            new ApiScope("permission-assignments:full"),
+            new ApiScope("role-assignments:read"),
+            new ApiScope("role-assignments:full")
         };
     }
 

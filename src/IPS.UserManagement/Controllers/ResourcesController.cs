@@ -9,7 +9,7 @@ public class ResourcesController : ControllerBase
     private IMediator Mediator => HttpContext.RequestServices.GetRequiredService<IMediator>();
 
     [HttpPost]
-    [Authorize]
+    [Authorize(Policy = "resources:full")]
     public async Task<IActionResult> CreateResource(CancellationToken cancel)
     {
         CreateResourceCommand command = new();
@@ -18,10 +18,11 @@ public class ResourcesController : ControllerBase
     }
 
     [HttpGet]
-    // [Authorize]
+    [Authorize(Policy = "resources:read")]
     public async Task<IActionResult> GetResources(CancellationToken cancel)
     {
-        await ValueTask.CompletedTask;
-        return BadRequest();
+        GetResourcesCommand command = new();
+        var models = await Mediator.Send(command, cancel);
+        return Ok(models);
     }
 }

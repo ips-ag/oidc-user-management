@@ -6,7 +6,7 @@ public class CreateResourceCommand : IRequest<ResourceQueryModel>
 {
     private class CreateResourceCommandHandler : IRequestHandler<CreateResourceCommand, ResourceQueryModel>
     {
-        public Task<ResourceQueryModel> Handle(CreateResourceCommand request, CancellationToken cancellationToken)
+        public Task<ResourceQueryModel> Handle(CreateResourceCommand request, CancellationToken cancel)
         {
             throw new NotImplementedException();
         }
