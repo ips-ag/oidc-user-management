@@ -7,12 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <ProjectReference Include="..\IPS.UserManagement.Domain\IPS.UserManagement.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\IPS.UserManagement.Domain\IPS.UserManagement.Domain.csproj" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     </ItemGroup>
 
 </Project>

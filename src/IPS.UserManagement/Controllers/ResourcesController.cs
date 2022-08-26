@@ -1,4 +1,5 @@
 ﻿using IPS.UserManagement.Application.Features.Resources.Commands;
+using IPS.UserManagement.Application.Features.Resources.Models;
 
 namespace IPS.UserManagement.Controllers;
 
@@ -10,9 +11,11 @@ public class ResourcesController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "resources:full")]
-    public async Task<IActionResult> CreateResource(CancellationToken cancel)
+    public async Task<IActionResult> CreateResource(
+        [FromBody] CreateResourceCommandModel commandModel,
+        CancellationToken cancel)
     {
-        CreateResourceCommand command = new();
+        CreateResourceCommand command = new(commandModel);
         var model = await Mediator.Send(command, cancel);
         return Ok(model);
     }

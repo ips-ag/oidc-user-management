@@ -18,9 +18,9 @@ public class ResourceTests
     [Fact]
     public async Task ShouldCreateResource()
     {
-        var token = new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token;
+        var cancel = new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token;
         var client = _fixture.Client;
-        var disco = await client.GetDiscoveryDocumentAsync(cancellationToken: token);
+        var disco = await client.GetDiscoveryDocumentAsync(cancellationToken: cancel);
         Assert.False(disco.IsError, disco.Error);
         var tokenResponse = await client.RequestClientCredentialsTokenAsync(
             new ClientCredentialsTokenRequest
@@ -30,14 +30,22 @@ public class ResourceTests
                 ClientSecret = "secret",
                 Scope = "resources:full"
             },
-            cancellationToken: token);
+            cancel);
         Assert.False(tokenResponse.IsError, tokenResponse.Error);
         client.SetBearerToken(tokenResponse.AccessToken);
-        CreateResourceCommandModel commandModel = new();
+        CreateResourceCommandModel commandModel = new()
+        {
+            Name = "ERP", Description = "ERP system for Contoso company", Location = "https://erp.contoso.com"
+        };
         var content = JsonContent.Create(commandModel);
-        var response = await client.PostAsync("resources", content, token);
+        var response = await client.PostAsync("resources", content, cancel);
         response.EnsureSuccessStatusCode();
-        var model = response.Content.ReadFromJsonAsync<ResourceQueryModel>(cancellationToken: token);
+        var model = await response.Content.ReadFromJsonAsync<ResourceQueryModel>(cancellationToken: cancel);
         Assert.NotNull(model);
+        response = await client.GetAsync("resources", cancel);
+        response.EnsureSuccessStatusCode();
+        var models = await response.Content.ReadFromJsonAsync<List<ResourceQueryModel>>(cancellationToken: cancel);
+        Assert.NotNull(models);
+        Assert.NotEmpty(models);
     }
 }
