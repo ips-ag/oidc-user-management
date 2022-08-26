@@ -32,11 +32,15 @@ try
             });
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
-    builder.Services.AddIdentityServer()
-        .AddInMemoryClients(Config.GetClients())
-        .AddInMemoryIdentityResources(Config.GetIdentityResources())
-        .AddInMemoryApiScopes(Config.GetScopes())
-        .AddInMemoryApiResources(Config.GetApis());
+    var identityServerEnabled = builder.Configuration.GetValue<bool>("IdentityServer:Enabled");
+    if (identityServerEnabled)
+    {
+        builder.Services.AddIdentityServer()
+            .AddInMemoryClients(Config.GetClients())
+            .AddInMemoryIdentityResources(Config.GetIdentityResources())
+            .AddInMemoryApiScopes(Config.GetScopes())
+            .AddInMemoryApiResources(Config.GetApis());
+    }
     builder.Services
         .AddAuthentication()
         .AddJwtBearer();
@@ -56,7 +60,14 @@ try
         app.UseSwaggerUI();
     }
     app.UseRouting();
-    app.UseIdentityServer();
+    if (identityServerEnabled)
+    {
+        app.UseIdentityServer();
+    }
+    else
+    {
+        app.UseAuthentication();
+    }
     app.UseAuthorization();
     app.MapControllers();
     app.Run();

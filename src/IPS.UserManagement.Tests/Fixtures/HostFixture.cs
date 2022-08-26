@@ -1,67 +1,38 @@
-﻿using IPS.UserManagement.Tests.Fixtures.Authentication;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Hosting;
+﻿using IPS.UserManagement.Tests.Fixtures.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace IPS.UserManagement.Tests.Fixtures;
 
 public class HostFixture : IDisposable
 {
-    private readonly Lazy<WebApplicationFactory<Program>> _serverLazy;
+    private readonly Lazy<UserManagementApplicationFactory> _serverLazy;
+    private readonly Lazy<IdentityServerFactory> _identityServerLazy;
     public IServiceProvider Services => _serverLazy.Value.Services;
-    public HttpClient Client => _serverLazy.Value.CreateClient();
+
+    public HttpClient Client => _serverLazy.Value.CreateClient(
+        new WebApplicationFactoryClientOptions { BaseAddress = new Uri("http://usermanagement") });
+
+    public HttpClient IdentityServerClient => _identityServerLazy.Value.CreateClient(
+        new WebApplicationFactoryClientOptions { BaseAddress = new Uri("http://localhost") });
+
     public ITestOutputHelper? TestOutputHelper { private get; set; }
 
     public HostFixture()
     {
-        _serverLazy = new Lazy<WebApplicationFactory<Program>>(
-            () =>
-            {
-                return new WebApplicationFactory<Program>().WithWebHostBuilder(
-                    webHost => webHost
-                        .ConfigureLogging(
-                            (_, logging) =>
-                            {
-                                if (TestOutputHelper is null) return;
-                                logging.AddXunit(TestOutputHelper, LogLevel.Warning);
-                            })
-                        .UseEnvironment("Test")
-                        .UseContentRoot(Path.GetDirectoryName(GetType().Assembly.Location))
-                        .ConfigureAppConfiguration(
-                            (context, config) =>
-                            {
-                                config.Sources.Clear();
-                                config.AddJsonFile(
-                                        $"appsettings.{context.HostingEnvironment.EnvironmentName}.json",
-                                        false,
-                                        true)
-                                    .AddEnvironmentVariables();
-                            })
-                        .ConfigureTestServices((services)=>
-                        {
-                            services.AddSingleton(_ => Client);
-                            AddTestServices(services);
-                        })
-                );
-            });
+        _serverLazy = new Lazy<UserManagementApplicationFactory>(
+            () => new UserManagementApplicationFactory(() => TestOutputHelper, IdentityServerClient));
+        _identityServerLazy = new Lazy<IdentityServerFactory>(() => new IdentityServerFactory(() => TestOutputHelper));
     }
 
     public void Dispose()
     {
-        if (!_serverLazy.IsValueCreated) return;
-        Client.Dispose();
-        _serverLazy.Value.Dispose();
-    }
-
-    private void AddTestServices(IServiceCollection services)
-    {
-        services.AddSingleton<IConfigureOptions<AuthenticationOptions>, ConfigureAuthenticationOptions>();
-        services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
+        if (_identityServerLazy.IsValueCreated)
+        {
+            _identityServerLazy.Value.Dispose();
+        }
+        if (_serverLazy.IsValueCreated)
+        {
+            _serverLazy.Value.Dispose();
+        }
     }
 }

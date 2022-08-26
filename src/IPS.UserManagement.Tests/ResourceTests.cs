@@ -18,11 +18,11 @@ public class ResourceTests
     [Fact]
     public async Task ShouldCreateResource()
     {
-        var cancel = new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token;
-        var client = _fixture.Client;
-        var disco = await client.GetDiscoveryDocumentAsync(cancellationToken: cancel);
+        var cancel = new CancellationTokenSource(TimeSpan.FromMinutes(10)).Token;
+        var identityServerClient = _fixture.IdentityServerClient;
+        var disco = await identityServerClient.GetDiscoveryDocumentAsync(cancellationToken: cancel);
         Assert.False(disco.IsError, disco.Error);
-        var tokenResponse = await client.RequestClientCredentialsTokenAsync(
+        var tokenResponse = await identityServerClient.RequestClientCredentialsTokenAsync(
             new ClientCredentialsTokenRequest
             {
                 Address = disco.TokenEndpoint,
@@ -32,6 +32,7 @@ public class ResourceTests
             },
             cancel);
         Assert.False(tokenResponse.IsError, tokenResponse.Error);
+        var client = _fixture.Client;
         client.SetBearerToken(tokenResponse.AccessToken);
         CreateResourceCommandModel commandModel = new()
         {
