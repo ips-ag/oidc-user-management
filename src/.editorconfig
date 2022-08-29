@@ -186,6 +186,11 @@ csharp_preserve_single_line_statements = true
 resharper_class_never_instantiated_global_highlighting = none
 ## Syntax Style
 resharper_csharp_for_built_in_types = use_var_when_evident
+resharper_csharp_arguments_literal = positional
+resharper_csharp_arguments_string_literal = positional
+resharper_csharp_arguments_named = positional
+resharper_csharp_arguments_anonymous_function = positional
+resharper_csharp_arguments_other = positional
 csharp_namespace_body = file_scoped
 ## Line Breaks
 resharper_csharp_wrap_after_declaration_lpar = true
@@ -222,3 +227,4 @@ resharper_csharp_blank_lines_after_block_statements = 0
 ## CodeStyle
 ### Braces
 resharper_csharp_braces_for_ifelse = required_for_multiline_statement
+resharper_csharp_case_block_braces = next_line
