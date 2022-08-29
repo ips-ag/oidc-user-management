@@ -13,11 +13,16 @@ namespace IPS.UserManagement.Tests.Fixtures;
 public class UserManagementApplicationFactory : WebApplicationFactory<Program>
 {
     private readonly HttpClient _identityServerClient;
+    private readonly string _connectionString;
     private readonly Func<ITestOutputHelper?> _testOutputHelper;
 
-    public UserManagementApplicationFactory(Func<ITestOutputHelper?> testOutputHelper, HttpClient identityServerClient)
+    public UserManagementApplicationFactory(
+        Func<ITestOutputHelper?> testOutputHelper,
+        HttpClient identityServerClient,
+        string connectionString)
     {
         _identityServerClient = identityServerClient;
+        _connectionString = connectionString;
         _testOutputHelper = testOutputHelper;
     }
 

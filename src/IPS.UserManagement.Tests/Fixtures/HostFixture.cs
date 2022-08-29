@@ -1,15 +1,18 @@
 ﻿using IPS.UserManagement.Tests.Fixtures.Identity;
+using IPS.UserManagement.Tests.Fixtures.Persistence;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace IPS.UserManagement.Tests.Fixtures;
 
-public class HostFixture : IDisposable
+public class HostFixture : IAsyncDisposable
 {
-    private readonly Lazy<UserManagementApplicationFactory> _serverLazy;
+    private readonly Lazy<UserManagementApplicationFactory> _userManagementLazy;
     private readonly Lazy<IdentityServerFactory> _identityServerLazy;
-    public IServiceProvider Services => _serverLazy.Value.Services;
+    private readonly Lazy<SqlServer> _sqlServerLazy;
+    public IServiceProvider Services => _userManagementLazy.Value.Services;
+    private string ConnectionString => _sqlServerLazy.Value.ConnectionString;
 
-    public HttpClient Client => _serverLazy.Value.CreateClient(
+    public HttpClient Client => _userManagementLazy.Value.CreateClient(
         new WebApplicationFactoryClientOptions { BaseAddress = new Uri("http://usermanagement") });
 
     public HttpClient IdentityServerClient => _identityServerLazy.Value.CreateClient(
@@ -19,20 +22,26 @@ public class HostFixture : IDisposable
 
     public HostFixture()
     {
-        _serverLazy = new Lazy<UserManagementApplicationFactory>(
-            () => new UserManagementApplicationFactory(() => TestOutputHelper, IdentityServerClient));
-        _identityServerLazy = new Lazy<IdentityServerFactory>(() => new IdentityServerFactory(() => TestOutputHelper));
+        _sqlServerLazy = new Lazy<SqlServer>(() => new SqlServer());
+        _identityServerLazy =
+            new Lazy<IdentityServerFactory>(() => new IdentityServerFactory(() => TestOutputHelper, ConnectionString));
+        _userManagementLazy = new Lazy<UserManagementApplicationFactory>(
+            () => new UserManagementApplicationFactory(() => TestOutputHelper, IdentityServerClient, ConnectionString));
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         if (_identityServerLazy.IsValueCreated)
         {
-            _identityServerLazy.Value.Dispose();
+            await _identityServerLazy.Value.DisposeAsync();
         }
-        if (_serverLazy.IsValueCreated)
+        if (_userManagementLazy.IsValueCreated)
         {
-            _serverLazy.Value.Dispose();
+            await _userManagementLazy.Value.DisposeAsync();
+        }
+        if (_sqlServerLazy.IsValueCreated)
+        {
+            await _sqlServerLazy.Value.DisposeAsync();
         }
     }
 }
