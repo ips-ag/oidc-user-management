@@ -9,10 +9,12 @@ namespace IPS.UserManagement.Tests.Fixtures.Identity;
 public class IdentityServerFactory : WebApplicationFactory<IdentityServerStartup>
 {
     private readonly Func<ITestOutputHelper?> _testOutputHelper;
+    private readonly string _connectionString;
 
-    public IdentityServerFactory(Func<ITestOutputHelper?> testOutputHelper)
+    public IdentityServerFactory(Func<ITestOutputHelper?> testOutputHelper, string connectionString)
     {
         _testOutputHelper = testOutputHelper;
+        _connectionString = connectionString;
     }
 
     protected override IWebHostBuilder CreateWebHostBuilder()
@@ -28,7 +30,7 @@ public class IdentityServerFactory : WebApplicationFactory<IdentityServerStartup
                 {
                     var output = _testOutputHelper();
                     if (output is null) return;
-                    logging.AddXunit(output, LogLevel.Warning);
+                    logging.AddXunit(output, LogLevel.Error);
                 })
             .UseUrls("http://localhost")
             .UseEnvironment("Test")
@@ -36,10 +38,13 @@ public class IdentityServerFactory : WebApplicationFactory<IdentityServerStartup
                 (context, config) =>
                 {
                     config.Sources.Clear();
-                    config.AddJsonFile(
+                    config
+                        .AddJsonFile(
                             $"appsettings.{context.HostingEnvironment.EnvironmentName}.json",
                             true,
                             true)
+                        .AddInMemoryCollection(
+                            new Dictionary<string, string> { ["ConnectionStrings:SqlServer"] = _connectionString })
                         .AddEnvironmentVariables();
                 });
         base.ConfigureWebHost(builder);
