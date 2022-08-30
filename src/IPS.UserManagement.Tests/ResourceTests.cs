@@ -32,7 +32,7 @@ public class ResourceTests
             },
             cancel);
         Assert.False(tokenResponse.IsError, tokenResponse.Error);
-        var client = _fixture.Client;
+        var client = _fixture.UserManagementClient;
         client.SetBearerToken(tokenResponse.AccessToken);
         CreateResourceCommandModel commandModel = new()
         {

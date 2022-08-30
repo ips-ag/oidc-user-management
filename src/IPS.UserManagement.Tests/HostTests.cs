@@ -15,6 +15,6 @@ public class HostTests
     public void ShouldStartHost()
     {
         // _fixture.Services.GetRequiredService<IConfiguration>();
-        var client = _fixture.Client;
+        var client = _fixture.UserManagementClient;
     }
 }
