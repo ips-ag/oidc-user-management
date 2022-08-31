@@ -1,5 +1,6 @@
 ﻿using IPS.UserManagement.Application.Extensions;
 using IPS.UserManagement.Extensions.Authentication;
+using IPS.UserManagement.IdentityServer.Extensions;
 using IPS.UserManagement.Repositories.IdentityServer.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -11,6 +12,7 @@ public class Startup
 {
     private IConfiguration Configuration { get; }
     private IHostEnvironment Env { get; }
+    private bool UseIdentityServer => Configuration.GetValue("IdentityServer:Enabled", false);
 
     public Startup(IConfiguration configuration, IHostEnvironment env)
     {
@@ -20,7 +22,8 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers()
+        services
+            .AddControllers()
             .AddNewtonsoftJson(
                 options =>
                 {
@@ -37,6 +40,7 @@ public class Startup
         services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
         services.AddAuthorization();
         services.AddSingleton<IConfigureOptions<AuthorizationOptions>, ConfigureAuthorizationOptions>();
+        if (UseIdentityServer) services.ConfigureIdentityServer(Configuration);
 
         services
             .AddApplicationServices()
@@ -51,8 +55,7 @@ public class Startup
             app.UseSwaggerUI();
         }
         app.UseRouting();
-        var identityServerEnabled = Configuration.GetValue<bool>("IdentityServer:Enabled");
-        if (identityServerEnabled)
+        if (UseIdentityServer)
         {
             app.UseIdentityServer();
         }
