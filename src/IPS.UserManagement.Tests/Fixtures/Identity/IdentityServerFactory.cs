@@ -17,14 +17,9 @@ public class IdentityServerFactory : WebApplicationFactory<IPS.UserManagement.Id
         _connectionString = connectionString;
     }
 
-    // protected override IWebHostBuilder CreateWebHostBuilder()
-    // {
-    //     return new WebHostBuilder().UseTestServer();
-    // }
-
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.UseStartup<IPS.UserManagement.IdentityServer.Startup>()
+        builder
             .ConfigureLogging(
                 (_, logging) =>
                 {
