@@ -1,77 +1,32 @@
-using IPS.UserManagement.Application.Extensions;
-using IPS.UserManagement.Extensions.Authentication;
-using IPS.UserManagement.Repositories.IdentityServer.Extensions;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using Serilog;
+using Serilog.Exceptions;
 
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .CreateBootstrapLogger();
+namespace IPS.UserManagement;
 
-try
+public static class Program
 {
-    var builder = WebApplication.CreateBuilder(args);
-    builder.Host.UseSerilog(
-        (ctx, lc) => lc
-            .WriteTo.Console()
-            .ReadFrom.Configuration(ctx.Configuration));
-    builder.Services
-        .AddControllers()
-        .AddNewtonsoftJson(
-            options =>
-            {
-                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                options.SerializerSettings.Converters.Add(
-                    new StringEnumConverter { NamingStrategy = new CamelCaseNamingStrategy() });
-            });
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
-    builder.Services
-        .AddAuthentication()
-        .AddJwtBearer();
-    builder.Services.AddSingleton<IConfigureOptions<AuthenticationOptions>, ConfigureAuthenticationOptions>();
-    builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
-    builder.Services.AddAuthorization();
-    builder.Services.AddSingleton<IConfigureOptions<AuthorizationOptions>, ConfigureAuthorizationOptions>();
-
-    builder.Services
-        .AddApplicationServices()
-        .AddIdentityServerRepositories(builder.Configuration);
-
-    var app = builder.Build();
-    if (app.Environment.IsDevelopment())
+    public static async Task Main(string[] args)
     {
-        app.UseSwagger();
-        app.UseSwaggerUI();
+        await CreateHostBuilder(args).Build().RunAsync();
     }
-    app.UseRouting();
-    var identityServerEnabled = builder.Configuration.GetValue<bool>("IdentityServer:Enabled");
-    if (identityServerEnabled)
-    {
-        app.UseIdentityServer();
-    }
-    else
-    {
-        app.UseAuthentication();
-    }
-    app.UseAuthorization();
-    app.MapControllers();
-    app.Run();
-}
-catch (Exception e)
-{
-    Log.Fatal(e, "Error running application");
-}
-finally
-{
-    Log.CloseAndFlush();
-}
 
-public partial class Program
-{
+    private static IHostBuilder CreateHostBuilder(string[] args)
+    {
+        return Host.CreateDefaultBuilder(args)
+            .UseSerilog(ConfigureLogging)
+            .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>());
+    }
+
+    private static void ConfigureLogging(
+        HostBuilderContext ctx,
+        IServiceProvider services,
+        LoggerConfiguration loggerConfiguration)
+    {
+        loggerConfiguration
+            .ReadFrom.Configuration(ctx.Configuration)
+            .Enrich.FromLogContext()
+            .Enrich.WithExceptionDetails()
+            .Enrich.WithMachineName()
+            .WriteTo.Console();
+    }
 }
