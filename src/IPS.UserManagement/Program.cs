@@ -1,7 +1,6 @@
-using IPS.UserManagement;
 using IPS.UserManagement.Application.Extensions;
 using IPS.UserManagement.Extensions.Authentication;
-using IPS.UserManagement.Repositories.Memory.Extensions;
+using IPS.UserManagement.Repositories.IdentityServer.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
@@ -32,15 +31,6 @@ try
             });
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
-    var identityServerEnabled = builder.Configuration.GetValue<bool>("IdentityServer:Enabled");
-    if (identityServerEnabled)
-    {
-        builder.Services.AddIdentityServer()
-            .AddInMemoryClients(Config.GetClients())
-            .AddInMemoryIdentityResources(Config.GetIdentityResources())
-            .AddInMemoryApiScopes(Config.GetScopes())
-            .AddInMemoryApiResources(Config.GetApis());
-    }
     builder.Services
         .AddAuthentication()
         .AddJwtBearer();
@@ -51,7 +41,7 @@ try
 
     builder.Services
         .AddApplicationServices()
-        .AddRepositories();
+        .AddIdentityServerRepositories(builder.Configuration);
 
     var app = builder.Build();
     if (app.Environment.IsDevelopment())
@@ -60,6 +50,7 @@ try
         app.UseSwaggerUI();
     }
     app.UseRouting();
+    var identityServerEnabled = builder.Configuration.GetValue<bool>("IdentityServer:Enabled");
     if (identityServerEnabled)
     {
         app.UseIdentityServer();

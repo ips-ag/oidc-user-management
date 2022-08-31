@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using IPS.UserManagement.Repositories.IdentityServer.Data.Migrations;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -14,7 +15,7 @@ public class IdentityServerStartup
     }
     public void ConfigureServices(IServiceCollection services)
     {
-        var assembly = GetType().Assembly.GetName().Name;
+        var assembly = typeof(MigrationLocator).Assembly.GetName().Name;
         var connectionString = _configuration.GetConnectionString("SqlServer");
         services.AddIdentityServer()
             .AddConfigurationStore(

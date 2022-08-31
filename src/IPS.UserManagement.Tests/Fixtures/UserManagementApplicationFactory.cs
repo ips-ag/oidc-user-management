@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -26,6 +27,23 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Program>
         _testOutputHelper = testOutputHelper;
     }
 
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        builder.ConfigureAppConfiguration(
+            (context, config) =>
+            {
+                config.Sources.Clear();
+                config.AddJsonFile(
+                        $"appsettings.{context.HostingEnvironment.EnvironmentName}.json",
+                        false,
+                        true)
+                    .AddInMemoryCollection(
+                        new Dictionary<string, string> { ["ConnectionStrings:SqlServer"] = _connectionString })
+                    .AddEnvironmentVariables();
+            });
+        return base.CreateHost(builder);
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder
@@ -39,16 +57,6 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Program>
             .UseUrls("http://usermanagement")
             .UseEnvironment("Test")
             .UseContentRoot(Path.GetDirectoryName(GetType().Assembly.Location))
-            .ConfigureAppConfiguration(
-                (context, config) =>
-                {
-                    config.Sources.Clear();
-                    config.AddJsonFile(
-                            $"appsettings.{context.HostingEnvironment.EnvironmentName}.json",
-                            false,
-                            true)
-                        .AddEnvironmentVariables();
-                })
             .ConfigureTestServices(
                 services =>
                 {
