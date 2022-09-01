@@ -1,7 +1,7 @@
 using Serilog;
 using Serilog.Exceptions;
 
-namespace IPS.UserManagement;
+namespace IPS.UserManagement.IdentityServer;
 
 public static class Program
 {
@@ -16,8 +16,11 @@ public static class Program
         }
         catch (Exception e)
         {
-            Log.Logger.Fatal(e, "Error running application");
-            throw;
+            if (e.GetType().Name != "StopTheHostException")
+            {
+                Log.Logger.Fatal(e, "Error running application");
+                throw;
+            }
         }
     }
 

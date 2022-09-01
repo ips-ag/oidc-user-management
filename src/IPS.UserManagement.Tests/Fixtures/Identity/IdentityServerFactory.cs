@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace IPS.UserManagement.Tests.Fixtures.Identity;
 
-public class IdentityServerFactory : WebApplicationFactory<IdentityServerStartup>
+public class IdentityServerFactory : WebApplicationFactory<IPS.UserManagement.IdentityServer.Startup>
 {
     private readonly Func<ITestOutputHelper?> _testOutputHelper;
     private readonly string _connectionString;
@@ -17,14 +17,9 @@ public class IdentityServerFactory : WebApplicationFactory<IdentityServerStartup
         _connectionString = connectionString;
     }
 
-    protected override IWebHostBuilder CreateWebHostBuilder()
-    {
-        return new WebHostBuilder().UseTestServer();
-    }
-
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.UseStartup<IdentityServerStartup>()
+        builder
             .ConfigureLogging(
                 (_, logging) =>
                 {
@@ -46,7 +41,8 @@ public class IdentityServerFactory : WebApplicationFactory<IdentityServerStartup
                         .AddInMemoryCollection(
                             new Dictionary<string, string> { ["ConnectionStrings:SqlServer"] = _connectionString })
                         .AddEnvironmentVariables();
-                });
+                })
+            .UseTestServer();
         base.ConfigureWebHost(builder);
     }
 }

@@ -1,26 +1,33 @@
 ﻿using Duende.IdentityServer.EntityFramework.DbContexts;
 using Duende.IdentityServer.EntityFramework.Mappers;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 
-namespace IPS.UserManagement.Tests.Fixtures.Identity;
+namespace IPS.UserManagement.IdentityServer.Data.Migrations;
 
-internal static class HostingExtensions
+internal class MigrationExecutor : BackgroundService
 {
-    public static void InitializeDatabase(this IApplicationBuilder app)
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+
+    public MigrationExecutor(IServiceScopeFactory serviceScopeFactory)
     {
-        using var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
+        _serviceScopeFactory = serviceScopeFactory;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var scope = _serviceScopeFactory.CreateScope();
         var persistedGrandContext = scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
-        persistedGrandContext.Database.Migrate();
+        await persistedGrandContext.Database.MigrateAsync(stoppingToken);
         var configurationContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-        configurationContext.Database.Migrate();
+        await configurationContext.Database.MigrateAsync(stoppingToken);
+        // TODO: move DB seed to migration
         if (!configurationContext.Clients.Any())
         {
             foreach (var client in Config.GetClients())
             {
                 configurationContext.Clients.Add(client.ToEntity());
             }
-            configurationContext.SaveChanges();
+            await configurationContext.SaveChangesAsync(stoppingToken);
         }
         if (!configurationContext.IdentityResources.Any())
         {
@@ -28,7 +35,7 @@ internal static class HostingExtensions
             {
                 configurationContext.IdentityResources.Add(resource.ToEntity());
             }
-            configurationContext.SaveChanges();
+            await configurationContext.SaveChangesAsync(stoppingToken);
         }
         if (!configurationContext.ApiScopes.Any())
         {
@@ -36,7 +43,7 @@ internal static class HostingExtensions
             {
                 configurationContext.ApiScopes.Add(resource.ToEntity());
             }
-            configurationContext.SaveChanges();
+            await configurationContext.SaveChangesAsync(stoppingToken);
         }
         if (!configurationContext.ApiResources.Any())
         {
@@ -44,7 +51,7 @@ internal static class HostingExtensions
             {
                 configurationContext.ApiResources.Add(resource.ToEntity());
             }
-            configurationContext.SaveChanges();
+            await configurationContext.SaveChangesAsync(stoppingToken);
         }
     }
 }

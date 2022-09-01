@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace IPS.UserManagement.Tests.Fixtures;
 
-public class UserManagementApplicationFactory : WebApplicationFactory<Program>
+public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
 {
     private readonly HttpClient _identityServerClient;
     private readonly string _connectionString;
@@ -28,6 +28,8 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        var contentRoot = Path.GetDirectoryName(GetType().Assembly.Location) ??
+            throw new InvalidOperationException("Unable to find content root");
         builder
             .ConfigureLogging(
                 (_, logging) =>
@@ -38,7 +40,7 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Program>
                 })
             .UseUrls("http://usermanagement")
             .UseEnvironment("Test")
-            .UseContentRoot(Path.GetDirectoryName(GetType().Assembly.Location))
+            .UseContentRoot(contentRoot)
             .ConfigureAppConfiguration(
                 (context, config) =>
                 {
@@ -47,6 +49,8 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Program>
                             $"appsettings.{context.HostingEnvironment.EnvironmentName}.json",
                             false,
                             true)
+                        .AddInMemoryCollection(
+                            new Dictionary<string, string> { ["ConnectionStrings:SqlServer"] = _connectionString })
                         .AddEnvironmentVariables();
                 })
             .ConfigureTestServices(

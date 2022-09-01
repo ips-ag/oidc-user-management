@@ -1,6 +1,6 @@
 ﻿using Duende.IdentityServer.Models;
 
-namespace IPS.UserManagement;
+namespace IPS.UserManagement.IdentityServer.Data;
 
 public static class Config
 {
