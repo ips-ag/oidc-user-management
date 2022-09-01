@@ -7,7 +7,21 @@ public static class Program
 {
     public static async Task Main(string[] args)
     {
-        await CreateHostBuilder(args).Build().RunAsync();
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .CreateBootstrapLogger();
+        try
+        {
+            await CreateHostBuilder(args).Build().RunAsync();
+        }
+        catch (Exception e)
+        {
+            if (e.GetType().Name != "StopTheHostException")
+            {
+                Log.Logger.Fatal(e, "Error running application");
+                throw;
+            }
+        }
     }
 
     private static IHostBuilder CreateHostBuilder(string[] args)
