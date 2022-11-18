@@ -5,8 +5,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Serilog;
+using Serilog.Events;
+using Serilog.Exceptions;
 
 namespace IPS.UserManagement.Tests.Fixtures;
 
@@ -26,18 +29,26 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
         _testOutputHelper = testOutputHelper;
     }
 
+    private void ConfigureLogging(HostBuilderContext ctx, LoggerConfiguration loggerConfiguration)
+    {
+        loggerConfiguration
+            .ReadFrom.Configuration(ctx.Configuration)
+            .Enrich.FromLogContext()
+            .Enrich.WithExceptionDetails()
+            .WriteTo.TestOutput(_testOutputHelper(), restrictedToMinimumLevel: LogEventLevel.Warning);
+    }
+
+    protected override IHostBuilder? CreateHostBuilder()
+    {
+        return Host.CreateDefaultBuilder().UseSerilog(ConfigureLogging);
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         var contentRoot = Path.GetDirectoryName(GetType().Assembly.Location) ??
             throw new InvalidOperationException("Unable to find content root");
         builder
-            .ConfigureLogging(
-                (_, logging) =>
-                {
-                    var testOutputHelper = _testOutputHelper();
-                    if (testOutputHelper is null) return;
-                    logging.AddXunit(testOutputHelper, LogLevel.Warning);
-                })
+            .UseStartup<Startup>()
             .UseUrls("http://usermanagement")
             .UseEnvironment("Test")
             .UseContentRoot(contentRoot)
