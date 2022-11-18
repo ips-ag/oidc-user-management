@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Json;
-using IdentityModel.Client;
 using IPS.UserManagement.Application.Features.Resources.Models;
+using IPS.UserManagement.Tests.Authentication;
 
 namespace IPS.UserManagement.Tests;
 
@@ -18,22 +18,12 @@ public class ResourceTests
     [Fact]
     public async Task ShouldCreateResource()
     {
-        var cancel = new CancellationTokenSource(TimeSpan.FromMinutes(10)).Token;
-        var identityServerClient = _fixture.IdentityServerClient;
-        var disco = await identityServerClient.GetDiscoveryDocumentAsync(cancellationToken: cancel);
-        Assert.False(disco.IsError, disco.Error);
-        var tokenResponse = await identityServerClient.RequestClientCredentialsTokenAsync(
-            new ClientCredentialsTokenRequest
-            {
-                Address = disco.TokenEndpoint,
-                ClientId = "client",
-                ClientSecret = "secret",
-                Scope = "resources:full"
-            },
-            cancel);
-        Assert.False(tokenResponse.IsError, tokenResponse.Error);
+        var cancel = new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token;
         var client = _fixture.UserManagementClient;
-        client.SetBearerToken(tokenResponse.AccessToken);
+        await client.LoginAsync(
+            _fixture.IdentityServerClient,
+            cancel,
+            scope: "resources:full");
         CreateResourceCommandModel commandModel = new()
         {
             Name = "ERP", Description = "ERP system for Contoso company", Location = "https://erp.contoso.com"

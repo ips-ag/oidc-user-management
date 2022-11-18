@@ -38,7 +38,7 @@ internal class ResourceRepository : IResourceRepository
     public async ValueTask<IReadOnlyCollection<Resource>> GetAsync(CancellationToken cancel)
     {
         List<Resource> resources = new();
-        await foreach (var model in _dbContext.ApiResources)
+        await foreach (var model in _dbContext.ApiResources.AsAsyncEnumerable().WithCancellation(cancel))
         {
             var resource = ToDomain(model);
             resources.Add(resource);
