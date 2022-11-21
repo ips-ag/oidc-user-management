@@ -1,6 +1,8 @@
-﻿using System.Net.Http.Json;
+﻿using IPS.UserManagement.Application.Features.Permissions.Models;
 using IPS.UserManagement.Application.Features.Resources.Models;
 using IPS.UserManagement.Tests.Authentication;
+using IPS.UserManagement.Tests.Permissions;
+using IPS.UserManagement.Tests.Resources;
 
 namespace IPS.UserManagement.Tests;
 
@@ -24,12 +26,17 @@ public class PermissionTests
             _fixture.IdentityServerClient,
             cancel,
             scope: "resources:full permissions:full roles:full permission-assignments:full role-assignments:full");
-        CreatePermissionCommandModel commandModel = new()
+        CreateResourceCommandModel resourceCommand = new()
         {
-            Name = "orders:read", Description = "Read all orders", Resource = "erpResourceId"
+            Name = "ERP", Description = "ERP system for Contoso company", Location = "https://erp.contoso.com"
         };
-        var content = JsonContent.Create(commandModel);
-        var response = await client.PostAsync("permissions", content, cancel);
-        response.EnsureSuccessStatusCode();
+        var resource = await client.CreateResourceAsync(resourceCommand, cancel);
+        CreatePermissionCommandModel permissionCommand = new()
+        {
+            Name = "orders:read", Description = "Read all orders", Resource = resource.Id
+        };
+        var permission = await client.CreatePermissionAsync(permissionCommand, cancel);
+        var permissions = await client.GetPermissionsForResourceAsync(resource.Id, cancel);
+        Assert.Contains(permissions, p => p.Id == permission.Id);
     }
 }

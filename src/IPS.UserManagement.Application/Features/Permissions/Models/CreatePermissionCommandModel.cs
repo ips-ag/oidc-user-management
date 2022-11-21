@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 
 #pragma warning disable CS8618
 
-namespace IPS.UserManagement.Application.Features.Resources.Models;
+namespace IPS.UserManagement.Application.Features.Permissions.Models;
 
 [DataContract]
 public class CreatePermissionCommandModel

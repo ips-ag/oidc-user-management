@@ -1,28 +1,30 @@
 ﻿using System.Net.Http.Json;
+using IPS.UserManagement.Application.Features.Permissions.Models;
 using IPS.UserManagement.Application.Features.Resources.Models;
 
-namespace IPS.UserManagement.Tests.Resources;
+namespace IPS.UserManagement.Tests.Permissions;
 
 public static class HttpClientExtensions
 {
-    public static async Task<ResourceQueryModel> CreateResourceAsync(
+    public static async Task<PermissionQueryModel> CreatePermissionAsync(
         this HttpClient client,
-        CreateResourceCommandModel command,
+        CreatePermissionCommandModel command,
         CancellationToken cancel)
     {
         var content = JsonContent.Create(command);
-        var response = await client.PostAsync("resources", content, cancel);
+        var response = await client.PostAsync("permissions", content, cancel);
         response.EnsureSuccessStatusCode();
-        var model = await response.Content.ReadFromJsonAsync<ResourceQueryModel>(cancellationToken: cancel);
+        var model = await response.Content.ReadFromJsonAsync<PermissionQueryModel>(cancellationToken: cancel);
         Assert.NotNull(model);
         return model;
     }
 
-    public static async Task<List<ResourceQueryModel>> GetResourcesAsync(
+    public static async Task<List<ResourceQueryModel>> GetPermissionsForResourceAsync(
         this HttpClient client,
+        string resourceId,
         CancellationToken cancel)
     {
-        var response = await client.GetAsync("resources", cancel);
+        var response = await client.GetAsync($"permissions?resource={resourceId}", cancel);
         response.EnsureSuccessStatusCode();
         var models = await response.Content.ReadFromJsonAsync<List<ResourceQueryModel>>(cancellationToken: cancel);
         Assert.NotNull(models);

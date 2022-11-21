@@ -1,6 +1,6 @@
-﻿using System.Net.Http.Json;
-using IPS.UserManagement.Application.Features.Resources.Models;
+﻿using IPS.UserManagement.Application.Features.Resources.Models;
 using IPS.UserManagement.Tests.Authentication;
+using IPS.UserManagement.Tests.Resources;
 
 namespace IPS.UserManagement.Tests;
 
@@ -24,19 +24,12 @@ public class ResourceTests
             _fixture.IdentityServerClient,
             cancel,
             scope: "resources:full");
-        CreateResourceCommandModel commandModel = new()
+        CreateResourceCommandModel command = new()
         {
             Name = "ERP", Description = "ERP system for Contoso company", Location = "https://erp.contoso.com"
         };
-        var content = JsonContent.Create(commandModel);
-        var response = await client.PostAsync("resources", content, cancel);
-        response.EnsureSuccessStatusCode();
-        var model = await response.Content.ReadFromJsonAsync<ResourceQueryModel>(cancellationToken: cancel);
-        Assert.NotNull(model);
-        response = await client.GetAsync("resources", cancel);
-        response.EnsureSuccessStatusCode();
-        var models = await response.Content.ReadFromJsonAsync<List<ResourceQueryModel>>(cancellationToken: cancel);
-        Assert.NotNull(models);
-        Assert.NotEmpty(models);
+        var model = await client.CreateResourceAsync(command, cancel);
+        var models = await client.GetResourcesAsync(cancel);
+        Assert.Contains(models, m => m.Id == model.Id);
     }
 }
