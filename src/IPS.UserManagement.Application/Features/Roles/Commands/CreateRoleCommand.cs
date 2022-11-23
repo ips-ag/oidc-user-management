@@ -16,8 +16,8 @@ public class CreateRoleCommand : IRequest<RoleQueryModel>
     private class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, RoleQueryModel>
     {
         private readonly IRoleRepository _repository;
-        private RoleRequestConverter _requestConverter;
-        private RoleConverter _converter;
+        private readonly RoleRequestConverter _requestConverter;
+        private readonly RoleConverter _converter;
 
         public CreateRoleCommandHandler(
             IRoleRepository repository,

@@ -50,6 +50,11 @@ public class ResourceTests
         var roles = await client.GetRolesAsync(cancel);
         Assert.Contains(roles, r => r.Id == role.Id);
         // assign permission to role
+        CreatePermissionAssignmentCommandModel permissionAssignmentCommand =
+            new() { Permission = permission.Id };
+        var permissionAssignment = await client.AssignPermissionAsync(role.Id, permissionAssignmentCommand, cancel);
+        var permissionAssignments = await client.GetPermissionsForRoleAsync(role.Id, cancel);
+        Assert.Contains(permissionAssignments, p => p.Id == permissionAssignment.Id);
         // assign role to user
         // access new resource as user
     }
