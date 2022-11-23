@@ -17,11 +17,16 @@
     <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
     <PackageReference Include="Serilog.Expressions" Version="3.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\IPS.UserManagement.Application\IPS.UserManagement.Application.csproj" />
     <ProjectReference Include="..\IPS.UserManagement.IdentityServer\IPS.UserManagement.IdentityServer.csproj" />
+    <ProjectReference Include="..\IPS.UserManagement.Repositories\IPS.UserManagement.Repositories.csproj" />
     <ProjectReference Include="..\IPS.UserManagement.Repositories.IdentityServer\IPS.UserManagement.Repositories.IdentityServer.csproj" />
   </ItemGroup>
 

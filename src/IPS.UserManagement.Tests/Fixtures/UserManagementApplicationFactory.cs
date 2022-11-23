@@ -16,16 +16,19 @@ namespace IPS.UserManagement.Tests.Fixtures;
 public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
 {
     private readonly HttpClient _identityServerClient;
-    private readonly string _connectionString;
+    private readonly string _identityServerConnectionString;
+    private readonly string _userManagementConnectionString;
     private readonly Func<ITestOutputHelper?> _testOutputHelper;
 
     public UserManagementApplicationFactory(
         Func<ITestOutputHelper?> testOutputHelper,
         HttpClient identityServerClient,
-        string connectionString)
+        string identityServerConnectionString,
+        string userManagementConnectionString)
     {
         _identityServerClient = identityServerClient;
-        _connectionString = connectionString;
+        _identityServerConnectionString = identityServerConnectionString;
+        _userManagementConnectionString = userManagementConnectionString;
         _testOutputHelper = testOutputHelper;
     }
 
@@ -61,7 +64,11 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
                             false,
                             true)
                         .AddInMemoryCollection(
-                            new Dictionary<string, string> { ["ConnectionStrings:SqlServer"] = _connectionString })
+                            new Dictionary<string, string>
+                            {
+                                ["ConnectionStrings:IdentityServer"] = _identityServerConnectionString,
+                                ["ConnectionStrings:UserManagement"] = _userManagementConnectionString
+                            })
                         .AddEnvironmentVariables();
                 })
             .ConfigureTestServices(

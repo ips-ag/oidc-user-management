@@ -17,15 +17,21 @@ public sealed class HostFixture : IAsyncDisposable
         new WebApplicationFactoryClientOptions { BaseAddress = new Uri("http://localhost") });
 
     public ITestOutputHelper? TestOutputHelper { private get; set; }
-    private string ConnectionString => _sqlServerLazy.Value.ConnectionString;
+    private string IdentityServerConnectionString => _sqlServerLazy.Value.IdentityServerConnectionString;
+    private string UserManagementConnectionString => _sqlServerLazy.Value.UserManagementConnectionString;
 
     public HostFixture()
     {
         _sqlServerLazy = new Lazy<SqlServer>(() => new SqlServer());
         _identityServerLazy =
-            new Lazy<IdentityServerFactory>(() => new IdentityServerFactory(() => TestOutputHelper, ConnectionString));
+            new Lazy<IdentityServerFactory>(
+                () => new IdentityServerFactory(() => TestOutputHelper, IdentityServerConnectionString));
         _userManagementLazy = new Lazy<UserManagementApplicationFactory>(
-            () => new UserManagementApplicationFactory(() => TestOutputHelper, IdentityServerClient, ConnectionString));
+            () => new UserManagementApplicationFactory(
+                () => TestOutputHelper,
+                IdentityServerClient,
+                IdentityServerConnectionString,
+                UserManagementConnectionString));
     }
 
     public async ValueTask DisposeAsync()

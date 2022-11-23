@@ -1,0 +1,1 @@
+﻿dotnet ef migrations remove -c UserManagementDbContext --startup-project ../IPS.UserManagement

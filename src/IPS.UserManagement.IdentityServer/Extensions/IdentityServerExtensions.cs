@@ -11,8 +11,8 @@ public static class IdentityServerExtensions
     {
         var assembly = typeof(MigrationLocator).Assembly.GetName().Name ??
             throw new InvalidOperationException("Unable to locate assembly containing database migrations");
-        var connectionString = configuration.GetConnectionString("SqlServer")??
-            throw new InvalidOperationException("SQL Server ConnectionString not configured");
+        var connectionString = configuration.GetConnectionString("IdentityServer")??
+            throw new InvalidOperationException("IdentityServer ConnectionString not configured");
         services.AddIdentityServer()
             .AddConfigurationStore(
                 store =>

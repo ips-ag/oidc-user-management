@@ -50,7 +50,7 @@ public class IdentityServerFactory : WebApplicationFactory<IdentityServer.Startu
                             true,
                             true)
                         .AddInMemoryCollection(
-                            new Dictionary<string, string> { ["ConnectionStrings:SqlServer"] = _connectionString })
+                            new Dictionary<string, string> { ["ConnectionStrings:IdentityServer"] = _connectionString })
                         .AddEnvironmentVariables();
                 })
             .UseTestServer();

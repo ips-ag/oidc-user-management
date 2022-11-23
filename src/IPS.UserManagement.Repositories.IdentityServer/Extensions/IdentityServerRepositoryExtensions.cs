@@ -18,8 +18,8 @@ public static class IdentityServerRepositoryExtensions
         IConfiguration configuration)
     {
         // identity server
-        var connectionString = configuration.GetConnectionString("SqlServer") ??
-            throw new InvalidOperationException("SQL Server ConnectionString not configured");
+        var connectionString = configuration.GetConnectionString("IdentityServer") ??
+            throw new InvalidOperationException("IdentityServer ConnectionString not configured");
         services.AddConfigurationDbContext(
             store => store.ConfigureDbContext = builder => builder.UseSqlite(connectionString));
         // resources

@@ -4,6 +4,7 @@ using IPS.UserManagement.Application.Extensions;
 using IPS.UserManagement.Extensions.Authentication;
 using IPS.UserManagement.Extensions.Errors;
 using IPS.UserManagement.IdentityServer.Extensions;
+using IPS.UserManagement.Repositories.Extensions;
 using IPS.UserManagement.Repositories.IdentityServer.Extensions;
 using Microsoft.IdentityModel.Logging;
 using Newtonsoft.Json;
@@ -50,6 +51,7 @@ public class Startup
 
         services
             .AddApplicationServices()
+            .AddRepositories(Configuration)
             .AddIdentityServerRepositories(Configuration);
     }
 

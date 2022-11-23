@@ -16,8 +16,8 @@ internal class MigrationExecutor : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
-        var persistedGrandContext = scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
-        await persistedGrandContext.Database.MigrateAsync(stoppingToken);
+        var persistedGrantContext = scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
+        await persistedGrantContext.Database.MigrateAsync(stoppingToken);
         var configurationContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
         await configurationContext.Database.MigrateAsync(stoppingToken);
         // TODO: move DB seed to migration
