@@ -17,13 +17,16 @@ namespace IPS.UserManagement.Repositories.EntityFramework.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.8");
 
-            modelBuilder.Entity("IPS.UserManagement.Repositories.EntityFramework.Models.Role", b =>
+            modelBuilder.Entity("IPS.UserManagement.Repositories.EntityFramework.Models.RoleModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("LastAccessed")

@@ -45,7 +45,7 @@ public class ResourceTests
         var permissions = await client.GetPermissionsForResourceAsync(resource.Id, cancel);
         Assert.Contains(permissions, p => p.Id == permission.Id);
         // create new role
-        CreateRoleCommandModel roleCommand = new();
+        CreateRoleCommandModel roleCommand = new() { Name = "Order Supervisor", Description = "Supervises all orders" };
         var role = await client.CreateRoleAsync(roleCommand, cancel);
         var roles = await client.GetRolesAsync(cancel);
         Assert.Contains(roles, r => r.Id == role.Id);

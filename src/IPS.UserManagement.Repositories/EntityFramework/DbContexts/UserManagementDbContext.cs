@@ -7,7 +7,7 @@ namespace IPS.UserManagement.Repositories.EntityFramework.DbContexts;
 
 public class UserManagementDbContext : DbContext
 {
-    public DbSet<Role> Roles { get; set; }
+    public DbSet<RoleModel> Roles { get; set; }
 
     public UserManagementDbContext(DbContextOptions<UserManagementDbContext> options)
         : base(options)

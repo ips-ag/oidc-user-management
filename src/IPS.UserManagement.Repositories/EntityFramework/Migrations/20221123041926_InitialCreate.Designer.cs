@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IPS.UserManagement.Repositories.EntityFramework.Migrations
 {
     [DbContext(typeof(UserManagementDbContext))]
-    [Migration("20221123031247_InitialCreate")]
+    [Migration("20221123041926_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -19,13 +19,16 @@ namespace IPS.UserManagement.Repositories.EntityFramework.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.8");
 
-            modelBuilder.Entity("IPS.UserManagement.Repositories.EntityFramework.Models.Role", b =>
+            modelBuilder.Entity("IPS.UserManagement.Repositories.EntityFramework.Models.RoleModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("LastAccessed")

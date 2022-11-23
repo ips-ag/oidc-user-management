@@ -11,7 +11,7 @@ public class RolesController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "roles:full")]
-    public async Task<IActionResult> CreateResource(
+    public async Task<IActionResult> CreateRole(
         [FromBody] CreateRoleCommandModel commandModel,
         CancellationToken cancel)
     {
@@ -22,7 +22,7 @@ public class RolesController : ControllerBase
 
     [HttpGet]
     [Authorize(Policy = "roles:read")]
-    public async Task<IActionResult> GetResources(CancellationToken cancel)
+    public async Task<IActionResult> GetRoles(CancellationToken cancel)
     {
         GetRolesCommand command = new();
         var models = await Mediator.Send(command, cancel);

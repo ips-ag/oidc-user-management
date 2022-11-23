@@ -18,7 +18,8 @@ namespace IPS.UserManagement.Repositories.EntityFramework.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    LastAccessed = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    LastAccessed = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
