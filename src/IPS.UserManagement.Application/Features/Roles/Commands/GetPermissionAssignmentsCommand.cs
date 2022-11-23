@@ -1,4 +1,6 @@
-﻿using IPS.UserManagement.Application.Features.Permissions.Models;
+﻿using IPS.UserManagement.Application.Features.Permissions.Converters;
+using IPS.UserManagement.Application.Features.Permissions.Models;
+using IPS.UserManagement.Domain.Roles;
 
 namespace IPS.UserManagement.Application.Features.Roles.Commands;
 
@@ -14,9 +16,23 @@ public class GetPermissionAssignmentsCommand : IRequest<List<PermissionQueryMode
     private class GetPermissionAssignmentsCommandHandler :
         IRequestHandler<GetPermissionAssignmentsCommand, List<PermissionQueryModel>>
     {
-        public Task<List<PermissionQueryModel>> Handle(GetPermissionAssignmentsCommand request, CancellationToken cancellationToken)
+        private readonly IRoleRepository _roleRepository;
+        private readonly PermissionConverter _permissionConverter;
+
+        public GetPermissionAssignmentsCommandHandler(
+            IRoleRepository roleRepository,
+            PermissionConverter permissionConverter)
         {
-            throw new NotImplementedException();
+            _roleRepository = roleRepository;
+            _permissionConverter = permissionConverter;
+        }
+
+        public async Task<List<PermissionQueryModel>> Handle(
+            GetPermissionAssignmentsCommand command,
+            CancellationToken cancel)
+        {
+            var permissions = await _roleRepository.GetPermissionsAsync(command.RoleId, cancel);
+            return _permissionConverter.ToModel(permissions);
         }
     }
 }

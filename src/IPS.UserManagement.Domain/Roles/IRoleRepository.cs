@@ -1,4 +1,6 @@
-﻿namespace IPS.UserManagement.Domain.Roles;
+﻿using IPS.UserManagement.Domain.Permissions;
+
+namespace IPS.UserManagement.Domain.Roles;
 
 public interface IRoleRepository
 {
@@ -6,4 +8,6 @@ public interface IRoleRepository
     ValueTask DeleteAsync(string id, CancellationToken cancel);
     ValueTask<Role> GetAsync(string id, CancellationToken cancel);
     ValueTask<IReadOnlyCollection<Role>> GetAsync(CancellationToken cancel);
+    Task<IReadOnlyCollection<Permission>> GetPermissionsAsync(string id, CancellationToken cancel);
+    Task<Permission> AssignPermissionAsync(string id, string permissionId, CancellationToken cancel);
 }
