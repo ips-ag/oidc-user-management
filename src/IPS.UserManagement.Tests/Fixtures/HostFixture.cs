@@ -1,17 +1,22 @@
 ﻿using IPS.UserManagement.Tests.Fixtures.Identity;
 using IPS.UserManagement.Tests.Fixtures.Persistence;
+using IPS.UserManagement.Tests.Fixtures.Resources;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace IPS.UserManagement.Tests.Fixtures;
 
 public sealed class HostFixture : IAsyncDisposable
 {
+    private readonly Lazy<ErpSystemApplicationFactory> _erpLazy;
     private readonly Lazy<UserManagementApplicationFactory> _userManagementLazy;
     private readonly Lazy<IdentityServerFactory> _identityServerLazy;
     private readonly Lazy<SqlServer> _sqlServerLazy;
 
     public HttpClient UserManagementClient => _userManagementLazy.Value.CreateClient(
         new WebApplicationFactoryClientOptions { BaseAddress = new Uri("http://usermanagement") });
+
+    public HttpClient ErpClient => _erpLazy.Value.CreateClient(
+        new WebApplicationFactoryClientOptions { BaseAddress = new Uri("http://erp") });
 
     public HttpClient IdentityServerClient => _identityServerLazy.Value.CreateClient(
         new WebApplicationFactoryClientOptions { BaseAddress = new Uri("http://localhost") });
@@ -32,6 +37,10 @@ public sealed class HostFixture : IAsyncDisposable
                 IdentityServerClient,
                 IdentityServerConnectionString,
                 UserManagementConnectionString));
+        _erpLazy = new Lazy<ErpSystemApplicationFactory>(
+            () => new ErpSystemApplicationFactory(
+                () => TestOutputHelper,
+                IdentityServerClient));
     }
 
     public async ValueTask DisposeAsync()

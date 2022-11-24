@@ -63,11 +63,13 @@ public class ResourceTests
         var roleAssignments = await client.GetRolesForUserAsync(userId, cancel);
         Assert.Contains(roleAssignments, p => p.Id == roleAssignment.Id);
         // access new resource as user
-        var erpClient = _fixture.UserManagementClient; // ErpClient
+        var erpClient = _fixture.ErpClient;
         await erpClient.LoginAsync(
             _fixture.IdentityServerClient,
             cancel,
             userId,
             scope: permission.Name);
+        var erpResponse = await erpClient.GetAsync("orders", cancel);
+        erpResponse.EnsureSuccessStatusCode();
     }
 }
