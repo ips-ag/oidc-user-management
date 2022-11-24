@@ -30,6 +30,11 @@ public class ResourceTests
             _fixture.IdentityServerClient,
             cancel,
             scope: "resources:full permissions:full roles:full permission-assignments:full role-assignments:full");
+        // create new role
+        CreateRoleCommandModel roleCommand = new() { Name = "Order Supervisor", Description = "Supervises all orders" };
+        var role = await client.CreateRoleAsync(roleCommand, cancel);
+        var roles = await client.GetRolesAsync(cancel);
+        Assert.Contains(roles, r => r.Id == role.Id);
         // create new resource
         CreateResourceCommandModel resourceCommand = new()
         {
@@ -46,11 +51,6 @@ public class ResourceTests
         var permission = await client.CreatePermissionAsync(permissionCommand, cancel);
         var permissions = await client.GetPermissionsForResourceAsync(resource.Id, cancel);
         Assert.Contains(permissions, p => p.Id == permission.Id);
-        // create new role
-        CreateRoleCommandModel roleCommand = new() { Name = "Order Supervisor", Description = "Supervises all orders" };
-        var role = await client.CreateRoleAsync(roleCommand, cancel);
-        var roles = await client.GetRolesAsync(cancel);
-        Assert.Contains(roles, r => r.Id == role.Id);
         // assign permission to role
         CreatePermissionAssignmentCommandModel permissionAssignmentCommand = new() { Permission = permission.Id };
         var permissionAssignment = await client.AssignPermissionAsync(role.Id, permissionAssignmentCommand, cancel);
