@@ -1,7 +1,12 @@
-﻿using IPS.UserManagement.Application.Extensions;
+﻿using Hellang.Middleware.ProblemDetails;
+using Hellang.Middleware.ProblemDetails.Mvc;
+using IPS.UserManagement.Application.Extensions;
 using IPS.UserManagement.Extensions.Authentication;
+using IPS.UserManagement.Extensions.Errors;
 using IPS.UserManagement.IdentityServer.Extensions;
+using IPS.UserManagement.Repositories.Extensions;
 using IPS.UserManagement.Repositories.IdentityServer.Extensions;
+using Microsoft.IdentityModel.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -24,6 +29,7 @@ public class Startup
     {
         services
             .AddControllers()
+            .AddProblemDetailsConventions()
             .AddNewtonsoftJson(
                 options =>
                 {
@@ -31,6 +37,7 @@ public class Startup
                     options.SerializerSettings.Converters.Add(
                         new StringEnumConverter { NamingStrategy = new CamelCaseNamingStrategy() });
                 });
+        services.AddProblemDetailsServices();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         services
@@ -44,13 +51,16 @@ public class Startup
 
         services
             .AddApplicationServices()
+            .AddRepositories(Configuration)
             .AddIdentityServerRepositories(Configuration);
     }
 
     public void Configure(IApplicationBuilder app)
     {
+        app.UseProblemDetails();
         if (Env.IsDevelopment())
         {
+            IdentityModelEventSource.ShowPII = true;
             app.UseSwagger();
             app.UseSwaggerUI();
         }

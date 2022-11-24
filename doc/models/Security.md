@@ -7,9 +7,8 @@ classDiagram
         +string Id
         +string Name
         +string Description
-        +Resource Resource
     }
-    Resource "1" *-- "*" Permission: Resource
+    Resource "*" <--> "*" Permission: Resource
     Permission "1" <.. "*" PermissionAssignment: Permission
     class Role {
         +string Id

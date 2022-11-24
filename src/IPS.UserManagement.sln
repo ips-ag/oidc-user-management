@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPS.UserManagement.Reposito
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPS.UserManagement.IdentityServer", "IPS.UserManagement.IdentityServer\IPS.UserManagement.IdentityServer.csproj", "{7919B8FF-9554-4FB0-872A-FAB7CED6C421}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPS.UserManagement.Repositories", "IPS.UserManagement.Repositories\IPS.UserManagement.Repositories.csproj", "{B54EF2C7-EABC-4A26-AB8C-C5E595B01A73}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{7919B8FF-9554-4FB0-872A-FAB7CED6C421}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7919B8FF-9554-4FB0-872A-FAB7CED6C421}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7919B8FF-9554-4FB0-872A-FAB7CED6C421}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B54EF2C7-EABC-4A26-AB8C-C5E595B01A73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B54EF2C7-EABC-4A26-AB8C-C5E595B01A73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B54EF2C7-EABC-4A26-AB8C-C5E595B01A73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B54EF2C7-EABC-4A26-AB8C-C5E595B01A73}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FA965158-422D-40BB-AE97-9B7EC17555F0} = {B723BB21-A28C-4F9D-8B95-9F219C2868C4}
@@ -71,5 +77,6 @@ Global
 		{EBC21730-F991-4EEC-A72E-72EC6A9F62C8} = {3BA7F753-1892-4CA3-BFCD-88B8A223F045}
 		{C941CC2C-B63B-425D-BA04-DF3E839BEBD9} = {007C87D1-89CB-465D-A3AA-8DB19314E245}
 		{7919B8FF-9554-4FB0-872A-FAB7CED6C421} = {4A018753-2D04-4E68-A04F-6E50E612D688}
+		{B54EF2C7-EABC-4A26-AB8C-C5E595B01A73} = {007C87D1-89CB-465D-A3AA-8DB19314E245}
 	EndGlobalSection
 EndGlobal

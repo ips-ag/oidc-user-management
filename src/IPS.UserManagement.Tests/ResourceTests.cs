@@ -1,6 +1,12 @@
-﻿using System.Net.Http.Json;
-using IdentityModel.Client;
+﻿using IPS.UserManagement.Application.Features.Permissions.Models;
 using IPS.UserManagement.Application.Features.Resources.Models;
+using IPS.UserManagement.Application.Features.Roles.Models;
+using IPS.UserManagement.Application.Features.Users.Models;
+using IPS.UserManagement.Tests.Authentication;
+using IPS.UserManagement.Tests.Permissions;
+using IPS.UserManagement.Tests.Resources;
+using IPS.UserManagement.Tests.Roles;
+using IPS.UserManagement.Tests.Users;
 
 namespace IPS.UserManagement.Tests;
 
@@ -16,37 +22,54 @@ public class ResourceTests
     }
 
     [Fact]
-    public async Task ShouldCreateResource()
+    public async Task ShouldCreateResourceAndPermitAccess()
     {
-        var cancel = new CancellationTokenSource(TimeSpan.FromMinutes(10)).Token;
-        var identityServerClient = _fixture.IdentityServerClient;
-        var disco = await identityServerClient.GetDiscoveryDocumentAsync(cancellationToken: cancel);
-        Assert.False(disco.IsError, disco.Error);
-        var tokenResponse = await identityServerClient.RequestClientCredentialsTokenAsync(
-            new ClientCredentialsTokenRequest
-            {
-                Address = disco.TokenEndpoint,
-                ClientId = "client",
-                ClientSecret = "secret",
-                Scope = "resources:full"
-            },
-            cancel);
-        Assert.False(tokenResponse.IsError, tokenResponse.Error);
+        var cancel = new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token;
         var client = _fixture.UserManagementClient;
-        client.SetBearerToken(tokenResponse.AccessToken);
-        CreateResourceCommandModel commandModel = new()
+        await client.LoginAsync(
+            _fixture.IdentityServerClient,
+            cancel,
+            scope: "resources:full permissions:full roles:full permission-assignments:full role-assignments:full");
+        // create new resource
+        CreateResourceCommandModel resourceCommand = new()
         {
             Name = "ERP", Description = "ERP system for Contoso company", Location = "https://erp.contoso.com"
         };
-        var content = JsonContent.Create(commandModel);
-        var response = await client.PostAsync("resources", content, cancel);
-        response.EnsureSuccessStatusCode();
-        var model = await response.Content.ReadFromJsonAsync<ResourceQueryModel>(cancellationToken: cancel);
-        Assert.NotNull(model);
-        response = await client.GetAsync("resources", cancel);
-        response.EnsureSuccessStatusCode();
-        var models = await response.Content.ReadFromJsonAsync<List<ResourceQueryModel>>(cancellationToken: cancel);
-        Assert.NotNull(models);
-        Assert.NotEmpty(models);
+        var resource = await client.CreateResourceAsync(resourceCommand, cancel);
+        var resources = await client.GetResourcesAsync(cancel);
+        Assert.Contains(resources, m => m.Id == resource.Id);
+        // create new resource permission
+        CreatePermissionCommandModel permissionCommand = new()
+        {
+            Name = "orders:read", Description = "Read all orders", Resource = resource.Id
+        };
+        var permission = await client.CreatePermissionAsync(permissionCommand, cancel);
+        var permissions = await client.GetPermissionsForResourceAsync(resource.Id, cancel);
+        Assert.Contains(permissions, p => p.Id == permission.Id);
+        // create new role
+        CreateRoleCommandModel roleCommand = new() { Name = "Order Supervisor", Description = "Supervises all orders" };
+        var role = await client.CreateRoleAsync(roleCommand, cancel);
+        var roles = await client.GetRolesAsync(cancel);
+        Assert.Contains(roles, r => r.Id == role.Id);
+        // assign permission to role
+        CreatePermissionAssignmentCommandModel permissionAssignmentCommand = new() { Permission = permission.Id };
+        var permissionAssignment = await client.AssignPermissionAsync(role.Id, permissionAssignmentCommand, cancel);
+        var permissionAssignments = await client.GetPermissionsForRoleAsync(role.Id, cancel);
+        Assert.Contains(permissionAssignments, p => p.Id == permissionAssignment.Id);
+        // assign role to user
+        var userId = "Bob";
+        CreateRoleAssignmentCommandModel roleAssignmentCommand = new() { RoleId = role.Id };
+        var roleAssignment = await client.AssignRoleAsync(userId, roleAssignmentCommand, cancel);
+        var roleAssignments = await client.GetRolesForUserAsync(userId, cancel);
+        Assert.Contains(roleAssignments, p => p.Id == roleAssignment.Id);
+        // access new resource as user
+        var erpClient = _fixture.ErpClient;
+        await erpClient.LoginAsync(
+            _fixture.IdentityServerClient,
+            cancel,
+            userId,
+            scope: permission.Name);
+        var erpResponse = await erpClient.GetAsync("orders", cancel);
+        erpResponse.EnsureSuccessStatusCode();
     }
 }

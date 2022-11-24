@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using IPS.UserManagement.IdentityServer.Data;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
+using Serilog;
+using Serilog.Events;
+using Serilog.Exceptions;
 
 namespace IPS.UserManagement.Tests.Fixtures.Identity;
 
-public class IdentityServerFactory : WebApplicationFactory<IPS.UserManagement.IdentityServer.Startup>
+public class IdentityServerFactory : WebApplicationFactory<IdentityServer.Startup>
 {
     private readonly Func<ITestOutputHelper?> _testOutputHelper;
     private readonly string _connectionString;
@@ -17,16 +21,24 @@ public class IdentityServerFactory : WebApplicationFactory<IPS.UserManagement.Id
         _connectionString = connectionString;
     }
 
+    private void ConfigureLogging(HostBuilderContext ctx, LoggerConfiguration loggerConfiguration)
+    {
+        loggerConfiguration
+            .ReadFrom.Configuration(ctx.Configuration)
+            .Enrich.FromLogContext()
+            .Enrich.WithExceptionDetails()
+            .WriteTo.TestOutput(_testOutputHelper(), restrictedToMinimumLevel: LogEventLevel.Error);
+    }
+
+    protected override IHostBuilder? CreateHostBuilder()
+    {
+        return Host.CreateDefaultBuilder().UseSerilog(ConfigureLogging);
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder
-            .ConfigureLogging(
-                (_, logging) =>
-                {
-                    var output = _testOutputHelper();
-                    if (output is null) return;
-                    logging.AddXunit(output, LogLevel.Error);
-                })
+            .UseStartup<IdentityServer.Startup>()
             .UseUrls("http://localhost")
             .UseEnvironment("Test")
             .ConfigureAppConfiguration(
@@ -39,8 +51,13 @@ public class IdentityServerFactory : WebApplicationFactory<IPS.UserManagement.Id
                             true,
                             true)
                         .AddInMemoryCollection(
-                            new Dictionary<string, string> { ["ConnectionStrings:SqlServer"] = _connectionString })
+                            new Dictionary<string, string> { ["ConnectionStrings:IdentityServer"] = _connectionString })
                         .AddEnvironmentVariables();
+                })
+            .ConfigureTestServices(
+                services =>
+                {
+                    services.AddSingleton<IDataSeed, DataSeed>();
                 })
             .UseTestServer();
         base.ConfigureWebHost(builder);

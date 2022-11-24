@@ -2,9 +2,9 @@
 
 namespace IPS.UserManagement.IdentityServer.Data;
 
-public static class Config
+internal class DataSeed : IDataSeed
 {
-    public static IEnumerable<Client> GetClients()
+    public IEnumerable<Client> GetClients()
     {
         return new[]
         {
@@ -31,7 +31,7 @@ public static class Config
         };
     }
 
-    public static IEnumerable<IdentityResource> GetIdentityResources()
+    public IEnumerable<IdentityResource> GetIdentityResources()
     {
         return new IdentityResource[]
         {
@@ -40,7 +40,7 @@ public static class Config
         };
     }
 
-    public static IEnumerable<ApiScope> GetScopes()
+    public IEnumerable<ApiScope> GetScopes()
     {
         return new[]
         {
@@ -57,7 +57,7 @@ public static class Config
         };
     }
 
-    public static IEnumerable<ApiResource> GetApis()
+    public IEnumerable<ApiResource> GetApis()
     {
         return new[]
         {

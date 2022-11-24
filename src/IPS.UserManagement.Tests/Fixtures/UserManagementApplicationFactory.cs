@@ -5,25 +5,45 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Serilog;
+using Serilog.Events;
+using Serilog.Exceptions;
 
 namespace IPS.UserManagement.Tests.Fixtures;
 
 public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
 {
     private readonly HttpClient _identityServerClient;
-    private readonly string _connectionString;
+    private readonly string _identityServerConnectionString;
+    private readonly string _userManagementConnectionString;
     private readonly Func<ITestOutputHelper?> _testOutputHelper;
 
     public UserManagementApplicationFactory(
         Func<ITestOutputHelper?> testOutputHelper,
         HttpClient identityServerClient,
-        string connectionString)
+        string identityServerConnectionString,
+        string userManagementConnectionString)
     {
         _identityServerClient = identityServerClient;
-        _connectionString = connectionString;
+        _identityServerConnectionString = identityServerConnectionString;
+        _userManagementConnectionString = userManagementConnectionString;
         _testOutputHelper = testOutputHelper;
+    }
+
+    private void ConfigureLogging(HostBuilderContext ctx, LoggerConfiguration loggerConfiguration)
+    {
+        loggerConfiguration
+            .ReadFrom.Configuration(ctx.Configuration)
+            .Enrich.FromLogContext()
+            .Enrich.WithExceptionDetails()
+            .WriteTo.TestOutput(_testOutputHelper(), restrictedToMinimumLevel: LogEventLevel.Warning);
+    }
+
+    protected override IHostBuilder? CreateHostBuilder()
+    {
+        return Host.CreateDefaultBuilder().UseSerilog(ConfigureLogging);
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -31,13 +51,7 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
         var contentRoot = Path.GetDirectoryName(GetType().Assembly.Location) ??
             throw new InvalidOperationException("Unable to find content root");
         builder
-            .ConfigureLogging(
-                (_, logging) =>
-                {
-                    var testOutputHelper = _testOutputHelper();
-                    if (testOutputHelper is null) return;
-                    logging.AddXunit(testOutputHelper, LogLevel.Warning);
-                })
+            .UseStartup<Startup>()
             .UseUrls("http://usermanagement")
             .UseEnvironment("Test")
             .UseContentRoot(contentRoot)
@@ -50,7 +64,11 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
                             false,
                             true)
                         .AddInMemoryCollection(
-                            new Dictionary<string, string> { ["ConnectionStrings:SqlServer"] = _connectionString })
+                            new Dictionary<string, string>
+                            {
+                                ["ConnectionStrings:IdentityServer"] = _identityServerConnectionString,
+                                ["ConnectionStrings:UserManagement"] = _userManagementConnectionString
+                            })
                         .AddEnvironmentVariables();
                 })
             .ConfigureTestServices(

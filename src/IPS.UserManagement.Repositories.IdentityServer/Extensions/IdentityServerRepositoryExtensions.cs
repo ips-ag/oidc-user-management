@@ -1,6 +1,12 @@
 ﻿using Duende.IdentityServer.EntityFramework.Storage;
+using IPS.UserManagement.Domain.Permissions;
 using IPS.UserManagement.Domain.Resources;
+using IPS.UserManagement.Domain.Users;
+using IPS.UserManagement.Repositories.IdentityServer.Permissions;
+using IPS.UserManagement.Repositories.IdentityServer.Permissions.Converters;
 using IPS.UserManagement.Repositories.IdentityServer.Resources;
+using IPS.UserManagement.Repositories.IdentityServer.Resources.Converters;
+using IPS.UserManagement.Repositories.IdentityServer.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,12 +20,18 @@ public static class IdentityServerRepositoryExtensions
         IConfiguration configuration)
     {
         // identity server
-        var connectionString = configuration.GetConnectionString("SqlServer") ??
-            throw new InvalidOperationException("SQL Server ConnectionString not configured");
+        var connectionString = configuration.GetConnectionString("IdentityServer") ??
+            throw new InvalidOperationException("IdentityServer ConnectionString not configured");
         services.AddConfigurationDbContext(
             store => store.ConfigureDbContext = builder => builder.UseSqlite(connectionString));
         // resources
         services.AddScoped<IResourceRepository, ResourceRepository>();
+        services.AddSingleton<ResourceConverter>();
+        // permissions
+        services.AddScoped<IPermissionRepository, PermissionRepository>();
+        services.AddSingleton<PermissionConverter>();
+        // users
+        services.AddScoped<IUserRepository, UserRepository>();
         return services;
     }
 }
