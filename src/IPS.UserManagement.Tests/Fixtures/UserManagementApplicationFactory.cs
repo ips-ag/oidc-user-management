@@ -64,7 +64,7 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
                             false,
                             true)
                         .AddInMemoryCollection(
-                            new Dictionary<string, string>
+                            new Dictionary<string, string?>
                             {
                                 ["ConnectionStrings:IdentityServer"] = _identityServerConnectionString,
                                 ["ConnectionStrings:UserManagement"] = _userManagementConnectionString

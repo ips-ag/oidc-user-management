@@ -51,7 +51,7 @@ public class IdentityServerFactory : WebApplicationFactory<IdentityServer.Startu
                             true,
                             true)
                         .AddInMemoryCollection(
-                            new Dictionary<string, string> { ["ConnectionStrings:IdentityServer"] = _connectionString })
+                            new Dictionary<string, string?> { ["ConnectionStrings:IdentityServer"] = _connectionString })
                         .AddEnvironmentVariables();
                 })
             .ConfigureTestServices(

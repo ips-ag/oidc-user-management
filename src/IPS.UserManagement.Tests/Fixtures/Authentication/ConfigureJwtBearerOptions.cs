@@ -20,7 +20,7 @@ internal class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptio
         Configure(JwtBearerDefaults.AuthenticationScheme, options);
     }
 
-    public void Configure(string name, JwtBearerOptions options)
+    public void Configure(string? name, JwtBearerOptions options)
     {
         options.Backchannel = _client;
         options.Authority = _client.BaseAddress?.OriginalString;
