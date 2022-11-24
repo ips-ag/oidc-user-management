@@ -1,4 +1,5 @@
-﻿using IPS.UserManagement.IdentityServer.Data.Migrations;
+﻿using IPS.UserManagement.IdentityServer.Data;
+using IPS.UserManagement.IdentityServer.Data.Migrations;
 using Microsoft.EntityFrameworkCore;
 
 namespace IPS.UserManagement.IdentityServer.Extensions;
@@ -28,6 +29,7 @@ public static class IdentityServerExtensions
                         connectionString,
                         sql => sql.MigrationsAssembly(assembly));
                 });
+        services.AddSingleton<IDataSeed, DataSeed>();
         services.AddHostedService<MigrationExecutor>();
         return services;
     }

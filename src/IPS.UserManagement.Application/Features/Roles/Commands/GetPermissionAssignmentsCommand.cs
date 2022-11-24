@@ -31,7 +31,7 @@ public class GetPermissionAssignmentsCommand : IRequest<List<PermissionQueryMode
             GetPermissionAssignmentsCommand command,
             CancellationToken cancel)
         {
-            var permissions = await _roleRepository.GetPermissionsAsync(command.RoleId, cancel);
+            var permissions = await _roleRepository.GetAssignedPermissionsAsync(command.RoleId, cancel);
             return _permissionConverter.ToModel(permissions);
         }
     }

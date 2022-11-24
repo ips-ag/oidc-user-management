@@ -90,7 +90,7 @@ internal class RoleRepository : IRoleRepository, IAsyncDisposable
         return permission;
     }
 
-    public async Task<IReadOnlyCollection<Permission>> GetPermissionsAsync(string id, CancellationToken cancel)
+    public async Task<IReadOnlyCollection<Permission>> GetAssignedPermissionsAsync(string id, CancellationToken cancel)
     {
         var roleModel = await GetRoleModelAsync(id, cancel);
         if (roleModel is null) throw new EntityNotFoundException(typeof(Role), id);

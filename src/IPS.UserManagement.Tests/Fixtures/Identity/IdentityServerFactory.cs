@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using IPS.UserManagement.IdentityServer.Data;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -52,6 +53,11 @@ public class IdentityServerFactory : WebApplicationFactory<IdentityServer.Startu
                         .AddInMemoryCollection(
                             new Dictionary<string, string> { ["ConnectionStrings:IdentityServer"] = _connectionString })
                         .AddEnvironmentVariables();
+                })
+            .ConfigureTestServices(
+                services =>
+                {
+                    services.AddSingleton<IDataSeed, DataSeed>();
                 })
             .UseTestServer();
         base.ConfigureWebHost(builder);

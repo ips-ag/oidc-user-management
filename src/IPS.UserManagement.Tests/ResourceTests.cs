@@ -1,10 +1,12 @@
 ﻿using IPS.UserManagement.Application.Features.Permissions.Models;
 using IPS.UserManagement.Application.Features.Resources.Models;
 using IPS.UserManagement.Application.Features.Roles.Models;
+using IPS.UserManagement.Application.Features.Users.Models;
 using IPS.UserManagement.Tests.Authentication;
 using IPS.UserManagement.Tests.Permissions;
 using IPS.UserManagement.Tests.Resources;
 using IPS.UserManagement.Tests.Roles;
+using IPS.UserManagement.Tests.Users;
 
 namespace IPS.UserManagement.Tests;
 
@@ -50,12 +52,22 @@ public class ResourceTests
         var roles = await client.GetRolesAsync(cancel);
         Assert.Contains(roles, r => r.Id == role.Id);
         // assign permission to role
-        CreatePermissionAssignmentCommandModel permissionAssignmentCommand =
-            new() { Permission = permission.Id };
+        CreatePermissionAssignmentCommandModel permissionAssignmentCommand = new() { Permission = permission.Id };
         var permissionAssignment = await client.AssignPermissionAsync(role.Id, permissionAssignmentCommand, cancel);
         var permissionAssignments = await client.GetPermissionsForRoleAsync(role.Id, cancel);
         Assert.Contains(permissionAssignments, p => p.Id == permissionAssignment.Id);
         // assign role to user
+        var userId = "Bob";
+        CreateRoleAssignmentCommandModel roleAssignmentCommand = new() { RoleId = role.Id };
+        var roleAssignment = await client.AssignRoleAsync(userId, roleAssignmentCommand, cancel);
+        var roleAssignments = await client.GetRolesForUserAsync(userId, cancel);
+        Assert.Contains(roleAssignments, p => p.Id == roleAssignment.Id);
         // access new resource as user
+        var erpClient = _fixture.UserManagementClient; // ErpClient
+        await erpClient.LoginAsync(
+            _fixture.IdentityServerClient,
+            cancel,
+            userId,
+            scope: permission.Name);
     }
 }

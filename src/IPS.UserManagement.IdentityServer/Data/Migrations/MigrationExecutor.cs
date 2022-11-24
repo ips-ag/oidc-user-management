@@ -16,14 +16,16 @@ internal class MigrationExecutor : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
-        var persistedGrantContext = scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
+        var services = scope.ServiceProvider;
+        var persistedGrantContext = services.GetRequiredService<PersistedGrantDbContext>();
         await persistedGrantContext.Database.MigrateAsync(stoppingToken);
-        var configurationContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+        var configurationContext = services.GetRequiredService<ConfigurationDbContext>();
         await configurationContext.Database.MigrateAsync(stoppingToken);
+        var seed = services.GetRequiredService<IDataSeed>();
         // TODO: move DB seed to migration
         if (!configurationContext.Clients.Any())
         {
-            foreach (var client in Config.GetClients())
+            foreach (var client in seed.GetClients())
             {
                 configurationContext.Clients.Add(client.ToEntity());
             }
@@ -31,7 +33,7 @@ internal class MigrationExecutor : BackgroundService
         }
         if (!configurationContext.IdentityResources.Any())
         {
-            foreach (var resource in Config.GetIdentityResources())
+            foreach (var resource in seed.GetIdentityResources())
             {
                 configurationContext.IdentityResources.Add(resource.ToEntity());
             }
@@ -39,7 +41,7 @@ internal class MigrationExecutor : BackgroundService
         }
         if (!configurationContext.ApiScopes.Any())
         {
-            foreach (var resource in Config.GetScopes())
+            foreach (var resource in seed.GetScopes())
             {
                 configurationContext.ApiScopes.Add(resource.ToEntity());
             }
@@ -47,7 +49,7 @@ internal class MigrationExecutor : BackgroundService
         }
         if (!configurationContext.ApiResources.Any())
         {
-            foreach (var resource in Config.GetApis())
+            foreach (var resource in seed.GetApis())
             {
                 configurationContext.ApiResources.Add(resource.ToEntity());
             }
