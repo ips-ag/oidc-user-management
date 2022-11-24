@@ -74,12 +74,29 @@ internal class PermissionRepository : IPermissionRepository, IAsyncDisposable
         return permission;
     }
 
+    public async ValueTask<IReadOnlyCollection<Permission>> GetAsync(
+        IReadOnlyCollection<string> ids,
+        CancellationToken cancel)
+    {
+        var modelIds = ids.Select(int.Parse).ToHashSet();
+        List<Permission> permissions = new();
+        await foreach (var model in _dbContext.ApiScopes
+                           .Where(s => modelIds.Contains(s.Id))
+                           .AsAsyncEnumerable()
+                           .WithCancellation(cancel))
+        {
+            var permission = _converter.ToDomain(model);
+            permissions.Add(permission);
+        }
+        return permissions;
+    }
+
     public async ValueTask<IReadOnlyCollection<Permission>> GetByResourceAsync(
-        string resource,
+        string resourceId,
         CancellationToken cancel)
     {
         List<Permission> permissions = new();
-        var resourceModel = await GetResourceModelAsync(resource, cancel);
+        var resourceModel = await GetResourceModelAsync(resourceId, cancel);
         var scopeNames = resourceModel.Scopes.Select(s => s.Scope).ToHashSet();
         await foreach (var model in _dbContext.ApiScopes
                            .Where(s => scopeNames.Contains(s.Name))

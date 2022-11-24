@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IPS.UserManagement.Repositories.EntityFramework.Migrations
 {
     [DbContext(typeof(UserManagementDbContext))]
-    [Migration("20221123102722_InitialCreate")]
+    [Migration("20221124041408_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,7 +57,7 @@ namespace IPS.UserManagement.Repositories.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Permission")
+                    b.Property<string>("PermissionId")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
@@ -67,7 +67,7 @@ namespace IPS.UserManagement.Repositories.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoleId", "Permission")
+                    b.HasIndex("RoleId", "PermissionId")
                         .IsUnique();
 
                     b.ToTable("RolePermissionModel");

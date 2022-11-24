@@ -55,7 +55,7 @@ namespace IPS.UserManagement.Repositories.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Permission")
+                    b.Property<string>("PermissionId")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
@@ -65,7 +65,7 @@ namespace IPS.UserManagement.Repositories.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoleId", "Permission")
+                    b.HasIndex("RoleId", "PermissionId")
                         .IsUnique();
 
                     b.ToTable("RolePermissionModel");

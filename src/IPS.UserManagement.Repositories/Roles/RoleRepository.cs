@@ -12,17 +12,20 @@ namespace IPS.UserManagement.Repositories.Roles;
 internal class RoleRepository : IRoleRepository, IAsyncDisposable
 {
     private readonly UserManagementDbContext _context;
-    private readonly RoleConverter _converter;
+    private readonly RoleConverter _roleConverter;
+    private readonly RolePermissionConverter _permissionConverter;
     private readonly IPermissionRepository _permissionRepository;
 
     public RoleRepository(
         UserManagementDbContext context,
-        RoleConverter converter,
+        RoleConverter roleConverter,
+        RolePermissionConverter permissionConverter,
         IPermissionRepository permissionRepository)
     {
         _context = context;
-        _converter = converter;
+        _roleConverter = roleConverter;
         _permissionRepository = permissionRepository;
+        _permissionConverter = permissionConverter;
     }
 
     public async ValueTask DisposeAsync()
@@ -46,7 +49,7 @@ internal class RoleRepository : IRoleRepository, IAsyncDisposable
             _context.Roles.Update(model);
         }
         await _context.SaveChangesAsync(cancel);
-        var role = _converter.ToDomain(model);
+        var role = _roleConverter.ToDomain(model);
         return role;
     }
 
@@ -61,7 +64,7 @@ internal class RoleRepository : IRoleRepository, IAsyncDisposable
     {
         var model = await GetRoleModelAsync(id, cancel);
         if (model is null) throw new EntityNotFoundException(typeof(Role), id);
-        var resource = _converter.ToDomain(model);
+        var resource = _roleConverter.ToDomain(model);
         return resource;
     }
 
@@ -70,7 +73,7 @@ internal class RoleRepository : IRoleRepository, IAsyncDisposable
         List<Role> roles = new();
         await foreach (var model in _context.Roles.AsAsyncEnumerable().WithCancellation(cancel))
         {
-            var role = _converter.ToDomain(model);
+            var role = _roleConverter.ToDomain(model);
             roles.Add(role);
         }
         return roles;
@@ -81,16 +84,19 @@ internal class RoleRepository : IRoleRepository, IAsyncDisposable
         var roleModel = await GetRoleModelAsync(id, cancel);
         if (roleModel is null) throw new EntityNotFoundException(typeof(Role), id);
         var permission = await _permissionRepository.GetAsync(permissionId, cancel);
-        
-        // assign permission
-        throw new NotImplementedException();
+        var permissionModel = _permissionConverter.ToModel(permission);
+        roleModel.Permissions.Add(permissionModel);
+        _context.Roles.Update(roleModel);
+        return permission;
     }
 
-    public Task<IReadOnlyCollection<Permission>> GetPermissionsAsync(string id, CancellationToken cancel)
+    public async Task<IReadOnlyCollection<Permission>> GetPermissionsAsync(string id, CancellationToken cancel)
     {
-        // get permission assignments
-        // get permissions
-        throw new NotImplementedException();
+        var roleModel = await GetRoleModelAsync(id, cancel);
+        if (roleModel is null) throw new EntityNotFoundException(typeof(Role), id);
+        var permissionIds = roleModel.Permissions.Select(p => p.PermissionId).ToList();
+        var permissions = await _permissionRepository.GetAsync(permissionIds, cancel);
+        return permissions;
     }
 
     private async Task<RoleModel?> GetRoleModelAsync(string id, CancellationToken cancel)

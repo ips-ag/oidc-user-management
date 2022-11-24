@@ -21,6 +21,7 @@ public static class RepositoryExtensions
         // roles
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddSingleton<RoleConverter>();
+        services.AddSingleton<RolePermissionConverter>();
         return services;
     }
 }

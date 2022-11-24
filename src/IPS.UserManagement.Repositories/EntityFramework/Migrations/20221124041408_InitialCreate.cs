@@ -32,7 +32,7 @@ namespace IPS.UserManagement.Repositories.EntityFramework.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Permission = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    PermissionId = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
                     RoleId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -47,9 +47,9 @@ namespace IPS.UserManagement.Repositories.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_RolePermissionModel_RoleId_Permission",
+                name: "IX_RolePermissionModel_RoleId_PermissionId",
                 table: "RolePermissionModel",
-                columns: new[] { "RoleId", "Permission" },
+                columns: new[] { "RoleId", "PermissionId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(

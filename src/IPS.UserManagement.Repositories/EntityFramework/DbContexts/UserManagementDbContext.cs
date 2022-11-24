@@ -41,8 +41,8 @@ public class UserManagementDbContext : DbContext
             permission =>
             {
                 permission.HasKey(x => x.Id);
-                permission.Property(x => x.Permission).HasMaxLength(200).IsRequired();
-                permission.HasIndex(x => new { x.RoleId, x.Permission }).IsUnique();
+                permission.Property(x => x.PermissionId).HasMaxLength(200).IsRequired();
+                permission.HasIndex(x => new { x.RoleId, Permission = x.PermissionId }).IsUnique();
             });
 
         base.OnModelCreating(modelBuilder);
