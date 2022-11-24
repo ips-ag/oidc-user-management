@@ -1,5 +1,5 @@
-﻿using Hellang.Middleware.ProblemDetails;
-using IPS.UserManagement.Domain.Exceptions;
+﻿using IPS.UserManagement.Domain.Exceptions;
+using ProblemDetailsOptions = Hellang.Middleware.ProblemDetails.ProblemDetailsOptions;
 
 namespace IPS.UserManagement.Extensions.Errors;
 

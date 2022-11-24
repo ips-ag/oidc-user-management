@@ -21,7 +21,7 @@ internal class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptio
         Configure(JwtBearerDefaults.AuthenticationScheme, options);
     }
 
-    public void Configure(string name, JwtBearerOptions options)
+    public void Configure(string? name, JwtBearerOptions options)
     {
         var addresses = _server.Features.Get<IServerAddressesFeature>()?.Addresses;
         options.Authority = addresses?.FirstOrDefault(address => address.StartsWith("https://")) ??
