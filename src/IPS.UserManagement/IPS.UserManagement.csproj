@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\IPS.UserManagement.Application\IPS.UserManagement.Application.csproj" />
     <ProjectReference Include="..\IPS.UserManagement.IdentityServer\IPS.UserManagement.IdentityServer.csproj" />
+    <ProjectReference Include="..\IPS.UserManagement.Repositories.AspNetCoreIdentity\IPS.UserManagement.Repositories.AspNetCoreIdentity.csproj" />
     <ProjectReference Include="..\IPS.UserManagement.Repositories\IPS.UserManagement.Repositories.csproj" />
     <ProjectReference Include="..\IPS.UserManagement.Repositories.IdentityServer\IPS.UserManagement.Repositories.IdentityServer.csproj" />
   </ItemGroup>

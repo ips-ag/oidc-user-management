@@ -18,17 +18,20 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
     private readonly HttpClient _identityServerClient;
     private readonly string _identityServerConnectionString;
     private readonly string _userManagementConnectionString;
+    private readonly string _aspNetCoreIdentityConnectionString;
     private readonly Func<ITestOutputHelper?> _testOutputHelper;
 
     public UserManagementApplicationFactory(
         Func<ITestOutputHelper?> testOutputHelper,
         HttpClient identityServerClient,
         string identityServerConnectionString,
-        string userManagementConnectionString)
+        string userManagementConnectionString,
+        string aspNetCoreIdentityConnectionString)
     {
         _identityServerClient = identityServerClient;
         _identityServerConnectionString = identityServerConnectionString;
         _userManagementConnectionString = userManagementConnectionString;
+        _aspNetCoreIdentityConnectionString = aspNetCoreIdentityConnectionString;
         _testOutputHelper = testOutputHelper;
     }
 
@@ -67,7 +70,8 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
                             new Dictionary<string, string?>
                             {
                                 ["ConnectionStrings:IdentityServer"] = _identityServerConnectionString,
-                                ["ConnectionStrings:UserManagement"] = _userManagementConnectionString
+                                ["ConnectionStrings:UserManagement"] = _userManagementConnectionString,
+                                ["ConnectionStrings:AspNetCoreIdentity"] = _aspNetCoreIdentityConnectionString
                             })
                         .AddEnvironmentVariables();
                 })

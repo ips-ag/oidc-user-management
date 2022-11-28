@@ -24,19 +24,24 @@ public sealed class HostFixture : IAsyncDisposable
     public ITestOutputHelper? TestOutputHelper { private get; set; }
     private string IdentityServerConnectionString => _sqlServerLazy.Value.IdentityServerConnectionString;
     private string UserManagementConnectionString => _sqlServerLazy.Value.UserManagementConnectionString;
+    private string AspNetCoreIdentityConnectionString => _sqlServerLazy.Value.AspNetCoreIdentityConnectionString;
 
     public HostFixture()
     {
         _sqlServerLazy = new Lazy<SqlServer>(() => new SqlServer());
         _identityServerLazy =
             new Lazy<IdentityServerFactory>(
-                () => new IdentityServerFactory(() => TestOutputHelper, IdentityServerConnectionString));
+                () => new IdentityServerFactory(
+                    () => TestOutputHelper,
+                    IdentityServerConnectionString,
+                    AspNetCoreIdentityConnectionString));
         _userManagementLazy = new Lazy<UserManagementApplicationFactory>(
             () => new UserManagementApplicationFactory(
                 () => TestOutputHelper,
                 IdentityServerClient,
                 IdentityServerConnectionString,
-                UserManagementConnectionString));
+                UserManagementConnectionString,
+                AspNetCoreIdentityConnectionString));
         _erpLazy = new Lazy<ErpSystemApplicationFactory>(
             () => new ErpSystemApplicationFactory(
                 () => TestOutputHelper,
