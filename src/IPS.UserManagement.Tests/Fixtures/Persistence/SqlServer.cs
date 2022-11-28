@@ -25,7 +25,7 @@ public class SqlServer : IAsyncDisposable
         _identityServer.Open();
         _userManagement = new SqliteConnection(UserManagementConnectionString);
         _userManagement.Open();
-        _aspNetCoreIdentity = new SqliteConnection(UserManagementConnectionString);
+        _aspNetCoreIdentity = new SqliteConnection(AspNetCoreIdentityConnectionString);
         _aspNetCoreIdentity.Open();
     }
 
