@@ -16,9 +16,13 @@ namespace IPS.UserManagement.Repositories.AspNetCoreIdentity.EntityFramework.Mig
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "TEXT", nullable: true)
+                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    NormalizedName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 300, nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Updated = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    LastAccessed = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "TEXT", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -56,8 +60,9 @@ namespace IPS.UserManagement.Repositories.AspNetCoreIdentity.EntityFramework.Mig
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    PermissionId = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    ClaimType = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     RoleId = table.Column<string>(type: "TEXT", nullable: false),
-                    ClaimType = table.Column<string>(type: "TEXT", nullable: true),
                     ClaimValue = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
@@ -157,9 +162,10 @@ namespace IPS.UserManagement.Repositories.AspNetCoreIdentity.EntityFramework.Mig
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetRoleClaims_RoleId",
+                name: "IX_AspNetRoleClaims_RoleId_PermissionId",
                 table: "AspNetRoleClaims",
-                column: "RoleId");
+                columns: new[] { "RoleId", "PermissionId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
