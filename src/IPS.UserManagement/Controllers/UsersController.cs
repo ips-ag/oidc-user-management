@@ -11,6 +11,19 @@ public class UsersController : ControllerBase
 {
     private IMediator Mediator => HttpContext.RequestServices.GetRequiredService<IMediator>();
 
+    [HttpGet]
+    [Authorize(Policy = "users:read")]
+    [Produces(typeof(List<UserQueryModel>))]
+    public async Task<List<UserQueryModel>> GetUsers(
+        [FromQuery(Name = "id")] string? id,
+        [FromQuery(Name = "userName")] string? userName,
+        CancellationToken cancel)
+    {
+        GetUsersCommand command = new(id, userName);
+        var models = await Mediator.Send(command, cancel);
+        return models;
+    }
+
     [HttpPost("{id}/roles")]
     [Authorize(Policy = "role-assignments:full")]
     [Produces(typeof(RoleQueryModel))]

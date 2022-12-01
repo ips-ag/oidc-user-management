@@ -27,4 +27,9 @@ internal class RoleConverter
     {
         return new Role(role.Id, role.Name, role.Description);
     }
+
+    public IReadOnlyCollection<Role> ToDomain(IEnumerable<string> roleModels)
+    {
+        throw new NotImplementedException();
+    }
 }

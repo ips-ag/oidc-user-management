@@ -1,6 +1,7 @@
 ﻿using IPS.UserManagement.Tests.Fixtures.Identity;
 using IPS.UserManagement.Tests.Fixtures.Persistence;
 using IPS.UserManagement.Tests.Fixtures.Resources;
+using IPS.UserManagement.Tests.Fixtures.UserManagement;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace IPS.UserManagement.Tests.Fixtures;

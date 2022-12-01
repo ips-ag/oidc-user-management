@@ -8,7 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Duende.IdentityServer" Version="6.2.0" />    
-    <PackageReference Include="Duende.IdentityServer.EntityFramework" Version="6.2.0" />    
+    <PackageReference Include="Duende.IdentityServer.EntityFramework" Version="6.2.0" />
+    <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="6.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -22,6 +23,10 @@
   
   <ItemGroup>
     <Content Update="appsettings*.json" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\IPS.UserManagement.Repositories.AspNetCoreIdentity\IPS.UserManagement.Repositories.AspNetCoreIdentity.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">

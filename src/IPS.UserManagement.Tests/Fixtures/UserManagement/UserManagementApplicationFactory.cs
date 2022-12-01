@@ -1,4 +1,5 @@
-﻿using IPS.UserManagement.Tests.Fixtures.Authentication;
+﻿using IPS.UserManagement.Repositories.AspNetCoreIdentity.EntityFramework;
+using IPS.UserManagement.Tests.Fixtures.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
@@ -11,7 +12,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
 
-namespace IPS.UserManagement.Tests.Fixtures;
+namespace IPS.UserManagement.Tests.Fixtures.UserManagement;
 
 public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
 {
@@ -81,6 +82,7 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
                     services.AddSingleton(_ => _identityServerClient);
                     services.AddSingleton<IConfigureOptions<AuthenticationOptions>, ConfigureAuthenticationOptions>();
                     services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
+                    services.AddScoped<IDataSeed, DataSeed>();
                 });
         base.ConfigureWebHost(builder);
     }

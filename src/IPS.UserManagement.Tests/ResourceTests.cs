@@ -29,7 +29,8 @@ public class ResourceTests
         await client.LoginAsync(
             _fixture.IdentityServerClient,
             cancel,
-            scope: "resources:full permissions:full roles:full permission-assignments:full role-assignments:full");
+            scope:
+            "resources:full permissions:full roles:full users:read permission-assignments:full role-assignments:full");
         // create new resource
         CreateResourceCommandModel resourceCommand = new()
         {
@@ -57,18 +58,23 @@ public class ResourceTests
         var permissionAssignments = await client.GetPermissionsForRoleAsync(role.Id, cancel);
         Assert.Contains(permissionAssignments, p => p.Id == permissionAssignment.Id);
         // assign role to user
-        var userId = "Bob";
+        var userName = "bob";
+        var users = await client.GetUsersAsync(null, userName, cancel);
+        var user = Assert.Single(users, u => u.UserName == userName);
+        var userId = user.Id;
         CreateRoleAssignmentCommandModel roleAssignmentCommand = new() { RoleId = role.Id };
         var roleAssignment = await client.AssignRoleAsync(userId, roleAssignmentCommand, cancel);
         var roleAssignments = await client.GetRolesForUserAsync(userId, cancel);
         Assert.Contains(roleAssignments, p => p.Id == roleAssignment.Id);
         // access new resource as user
         var erpClient = _fixture.ErpClient;
-        await erpClient.LoginAsync(
+        await erpClient.LoginUserAsync(
             _fixture.IdentityServerClient,
-            cancel,
-            userId,
-            scope: permission.Name);
+            userName: userName,
+            password: "secret",
+            scope: permission.Name,
+            clientId: "erp",
+            cancel: cancel);
         var erpResponse = await erpClient.GetAsync("orders", cancel);
         erpResponse.EnsureSuccessStatusCode();
     }

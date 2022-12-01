@@ -1,6 +1,7 @@
 ﻿using IPS.UserManagement.Application.Features.Permissions.Converters;
 using IPS.UserManagement.Application.Features.Resources.Converters;
 using IPS.UserManagement.Application.Features.Roles.Converters;
+using IPS.UserManagement.Application.Features.Users.Converters;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IPS.UserManagement.Application.Extensions;
@@ -19,6 +20,8 @@ public static class ApplicationExtensions
         // roles
         services.AddSingleton<RoleRequestConverter>();
         services.AddSingleton<RoleConverter>();
+        // users
+        services.AddSingleton<UserConverter>();
         return services;
     }
 }

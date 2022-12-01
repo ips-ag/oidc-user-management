@@ -6,6 +6,19 @@ namespace IPS.UserManagement.Tests.Users;
 
 public static class HttpClientExtensions
 {
+    public static async Task<List<UserQueryModel>> GetUsersAsync(
+        this HttpClient client,
+        string? id,
+        string? userName,
+        CancellationToken cancel)
+    {
+        var response = await client.GetAsync($"users?id={id}&username={userName}", cancel);
+        response.EnsureSuccessStatusCode();
+        var models = await response.Content.ReadFromJsonAsync<List<UserQueryModel>>(cancellationToken: cancel);
+        Assert.NotNull(models);
+        return models;
+    }
+
     public static async Task<RoleQueryModel> AssignRoleAsync(
         this HttpClient client,
         string userId,

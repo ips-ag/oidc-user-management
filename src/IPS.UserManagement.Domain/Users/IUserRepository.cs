@@ -7,4 +7,5 @@ public interface IUserRepository
     ValueTask<Role> AssignRoleAsync(string id, string roleId, CancellationToken cancel);
     ValueTask DeleteRoleAssignmentAsync(string id, string roleId, CancellationToken cancel);
     ValueTask<IReadOnlyCollection<Role>> GetAssignedRolesAsync(string id, CancellationToken cancel);
+    ValueTask<IReadOnlyCollection<User>> QueryAsync(QueryRequest request, CancellationToken cancel);
 }

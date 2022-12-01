@@ -17,7 +17,24 @@ internal class MigrationExecutor : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var services = scope.ServiceProvider;
+        var dbContext = services.GetRequiredService<ApplicationDbContext>();
         await dbContext.Database.MigrateAsync(stoppingToken);
+        var seed = services.GetRequiredService<IDataSeed>();
+        if (!await dbContext.Roles.AnyAsync(stoppingToken))
+        {
+            await dbContext.Roles.AddRangeAsync(seed.GetRoles(), stoppingToken);
+            await dbContext.SaveChangesAsync(stoppingToken);
+        }
+        if (!await dbContext.RoleClaims.AnyAsync(stoppingToken))
+        {
+            await dbContext.RoleClaims.AddRangeAsync(seed.GetRoleClaims(), stoppingToken);
+            await dbContext.SaveChangesAsync(stoppingToken);
+        }
+        if (!await dbContext.Users.AnyAsync(stoppingToken))
+        {
+            await dbContext.Users.AddRangeAsync(seed.GetUsers(), stoppingToken);
+            await dbContext.SaveChangesAsync(stoppingToken);
+        }
     }
 }
