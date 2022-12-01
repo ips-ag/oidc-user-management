@@ -11,10 +11,10 @@ internal class DataSeed : IDataSeed
         {
             new Client
             {
-                ClientId = "client",
-                ClientName = "Client credentials flow client",
-                ClientSecrets = { new Secret("secret".Sha256()) },
-                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                ClientId = "usermanagement",
+                ClientName = "UserManagement application",
+                RequireClientSecret = false,
+                AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 AllowedScopes =
                 {
                     "resources:read",
@@ -34,7 +34,7 @@ internal class DataSeed : IDataSeed
             new Client
             {
                 ClientId = "erp",
-                ClientName = "Erp application client",
+                ClientName = "ERP application",
                 RequireClientSecret = false,
                 AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 AllowedScopes =

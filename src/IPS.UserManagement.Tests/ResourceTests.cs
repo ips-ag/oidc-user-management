@@ -26,11 +26,16 @@ public class ResourceTests
     {
         var cancel = new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token;
         var client = _fixture.UserManagementClient;
-        await client.LoginAsync(
+        var userManagerUserName = "usermanager";
+        var password = "secret";
+        await client.LoginUserAsync(
             _fixture.IdentityServerClient,
-            cancel,
+            userName: userManagerUserName,
+            password: password,
+            clientId: "usermanagement",
             scope:
-            "resources:full permissions:full roles:full users:read permission-assignments:full role-assignments:full");
+            "resources:full permissions:full roles:full users:read permission-assignments:full role-assignments:full",
+            cancel: cancel);
         // create new resource
         CreateResourceCommandModel resourceCommand = new()
         {

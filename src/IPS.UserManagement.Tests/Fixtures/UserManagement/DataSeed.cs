@@ -22,9 +22,15 @@ internal class DataSeed : IDataSeed
 
     public IReadOnlyCollection<ApplicationUserModel> GetUsers()
     {
-        var userName = "bob";
-        var email = "bob@contoso.com";
-        var bob = new ApplicationUserModel
+        var password = "secret";
+        var bob = CreateApplicationUserModel("bob", "bob@contoso.com", password);
+        var userManager = CreateApplicationUserModel("usermanager", "usermanager@contoso.com", password);
+        return new[] { bob, userManager };
+    }
+
+    private ApplicationUserModel CreateApplicationUserModel(string userName, string email, string password)
+    {
+        var user = new ApplicationUserModel
         {
             UserName = userName,
             Email = email,
@@ -33,8 +39,8 @@ internal class DataSeed : IDataSeed
             EmailConfirmed = true,
             SecurityStamp = Guid.NewGuid().ToString("N")
         };
-        bob.PasswordHash = _passwordHasher.HashPassword(bob, "secret");
-        return new[] { bob };
+        user.PasswordHash = _passwordHasher.HashPassword(user, password);
+        return user;
     }
 
     public IReadOnlyCollection<ApplicationRoleClaim> GetRoleClaims()
