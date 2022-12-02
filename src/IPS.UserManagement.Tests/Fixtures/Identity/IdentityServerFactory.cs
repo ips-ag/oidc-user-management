@@ -13,12 +13,17 @@ namespace IPS.UserManagement.Tests.Fixtures.Identity;
 public class IdentityServerFactory : WebApplicationFactory<IdentityServer.Startup>
 {
     private readonly Func<ITestOutputHelper?> _testOutputHelper;
-    private readonly string _connectionString;
+    private readonly string _identityServerConnectionString;
+    private readonly string _aspNetCoreIdentityConnectionString;
 
-    public IdentityServerFactory(Func<ITestOutputHelper?> testOutputHelper, string connectionString)
+    public IdentityServerFactory(
+        Func<ITestOutputHelper?> testOutputHelper,
+        string identityServerConnectionString,
+        string aspNetCoreIdentityConnectionString)
     {
         _testOutputHelper = testOutputHelper;
-        _connectionString = connectionString;
+        _identityServerConnectionString = identityServerConnectionString;
+        _aspNetCoreIdentityConnectionString = aspNetCoreIdentityConnectionString;
     }
 
     private void ConfigureLogging(HostBuilderContext ctx, LoggerConfiguration loggerConfiguration)
@@ -27,7 +32,7 @@ public class IdentityServerFactory : WebApplicationFactory<IdentityServer.Startu
             .ReadFrom.Configuration(ctx.Configuration)
             .Enrich.FromLogContext()
             .Enrich.WithExceptionDetails()
-            .WriteTo.TestOutput(_testOutputHelper(), restrictedToMinimumLevel: LogEventLevel.Error);
+            .WriteTo.TestOutput(_testOutputHelper(), LogEventLevel.Error);
     }
 
     protected override IHostBuilder? CreateHostBuilder()
@@ -51,7 +56,11 @@ public class IdentityServerFactory : WebApplicationFactory<IdentityServer.Startu
                             true,
                             true)
                         .AddInMemoryCollection(
-                            new Dictionary<string, string?> { ["ConnectionStrings:IdentityServer"] = _connectionString })
+                            new Dictionary<string, string?>
+                            {
+                                ["ConnectionStrings:IdentityServer"] = _identityServerConnectionString,
+                                ["ConnectionStrings:AspNetCoreIdentity"] = _aspNetCoreIdentityConnectionString
+                            })
                         .AddEnvironmentVariables();
                 })
             .ConfigureTestServices(

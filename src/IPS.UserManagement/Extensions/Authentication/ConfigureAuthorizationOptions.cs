@@ -26,6 +26,13 @@ public class ConfigureAuthorizationOptions : IConfigureOptions<AuthorizationOpti
         options.AddPolicy(
             "permission-assignments:read",
             policy => policy.RequireClaim("scope", "permission-assignments:read", "permission-assignments:full"));
+        // users
+        options.AddPolicy(
+            "users:full",
+            policy => policy.RequireClaim("scope", "users:full"));
+        options.AddPolicy(
+            "users:read",
+            policy => policy.RequireClaim("scope", "users:read", "users:full"));
         // role assignments
         options.AddPolicy(
             "role-assignments:full",

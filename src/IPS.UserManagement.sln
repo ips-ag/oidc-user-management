@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPS.UserManagement.Identity
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPS.UserManagement.Repositories", "IPS.UserManagement.Repositories\IPS.UserManagement.Repositories.csproj", "{B54EF2C7-EABC-4A26-AB8C-C5E595B01A73}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPS.UserManagement.Repositories.AspNetCoreIdentity", "IPS.UserManagement.Repositories.AspNetCoreIdentity\IPS.UserManagement.Repositories.AspNetCoreIdentity.csproj", "{E10B5C3A-5D35-47B4-882A-72035B8BA3D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{B54EF2C7-EABC-4A26-AB8C-C5E595B01A73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B54EF2C7-EABC-4A26-AB8C-C5E595B01A73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B54EF2C7-EABC-4A26-AB8C-C5E595B01A73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E10B5C3A-5D35-47B4-882A-72035B8BA3D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E10B5C3A-5D35-47B4-882A-72035B8BA3D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E10B5C3A-5D35-47B4-882A-72035B8BA3D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E10B5C3A-5D35-47B4-882A-72035B8BA3D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FA965158-422D-40BB-AE97-9B7EC17555F0} = {B723BB21-A28C-4F9D-8B95-9F219C2868C4}
@@ -78,5 +84,6 @@ Global
 		{C941CC2C-B63B-425D-BA04-DF3E839BEBD9} = {007C87D1-89CB-465D-A3AA-8DB19314E245}
 		{7919B8FF-9554-4FB0-872A-FAB7CED6C421} = {4A018753-2D04-4E68-A04F-6E50E612D688}
 		{B54EF2C7-EABC-4A26-AB8C-C5E595B01A73} = {007C87D1-89CB-465D-A3AA-8DB19314E245}
+		{E10B5C3A-5D35-47B4-882A-72035B8BA3D1} = {007C87D1-89CB-465D-A3AA-8DB19314E245}
 	EndGlobalSection
 EndGlobal

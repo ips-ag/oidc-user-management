@@ -4,6 +4,7 @@ using IPS.UserManagement.Application.Extensions;
 using IPS.UserManagement.Extensions.Authentication;
 using IPS.UserManagement.Extensions.Errors;
 using IPS.UserManagement.IdentityServer.Extensions;
+using IPS.UserManagement.Repositories.AspNetCoreIdentity.Extensions;
 using IPS.UserManagement.Repositories.Extensions;
 using IPS.UserManagement.Repositories.IdentityServer.Extensions;
 using Microsoft.IdentityModel.Logging;
@@ -52,6 +53,7 @@ public class Startup
         services
             .AddApplicationServices()
             .AddRepositories(Configuration)
+            .AddAspNetCoreIdentityRepositories(Configuration)
             .AddIdentityServerRepositories(Configuration);
     }
 

@@ -11,10 +11,10 @@ internal class DataSeed : IDataSeed
         {
             new Client
             {
-                ClientId = "client",
-                ClientName = "Client credentials flow client",
-                ClientSecrets = { new Secret("secret".Sha256()) },
-                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                ClientId = "usermanagement",
+                ClientName = "UserManagement application",
+                RequireClientSecret = false,
+                AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 AllowedScopes =
                 {
                     "resources:read",
@@ -23,6 +23,8 @@ internal class DataSeed : IDataSeed
                     "permissions:full",
                     "roles:read",
                     "roles:full",
+                    "users:read",
+                    "users:full",
                     "permission-assignments:read",
                     "permission-assignments:full",
                     "role-assignments:read",
@@ -31,10 +33,14 @@ internal class DataSeed : IDataSeed
             },
             new Client
             {
-                ClientId = "Bob",
-                ClientName = "Temporary user via client credentials",
-                ClientSecrets = { new Secret("secret".Sha256()) },
-                AllowedGrantTypes = GrantTypes.ClientCredentials
+                ClientId = "erp",
+                ClientName = "ERP application",
+                RequireClientSecret = false,
+                AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                AllowedScopes =
+                {
+                    "orders:read"
+                }
             }
         };
     }
@@ -58,6 +64,8 @@ internal class DataSeed : IDataSeed
             new ApiScope("permissions:full"),
             new ApiScope("roles:read"),
             new ApiScope("roles:full"),
+            new ApiScope("users:read"),
+            new ApiScope("users:full"),
             new ApiScope("permission-assignments:read"),
             new ApiScope("permission-assignments:full"),
             new ApiScope("role-assignments:read"),
@@ -79,6 +87,8 @@ internal class DataSeed : IDataSeed
                     "permissions:full",
                     "roles:read",
                     "roles:full",
+                    "users:read",
+                    "users:full",
                     "permission-assignments:read",
                     "permission-assignments:full",
                     "role-assignments:read",

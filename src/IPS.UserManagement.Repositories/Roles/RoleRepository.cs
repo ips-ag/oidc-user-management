@@ -63,7 +63,6 @@ internal class RoleRepository : IRoleRepository, IAsyncDisposable
     public async ValueTask<Role> GetAsync(string id, CancellationToken cancel)
     {
         var model = await GetRoleModelAsync(id, cancel);
-        if (model is null) throw new EntityNotFoundException(typeof(Role), id);
         var resource = _roleConverter.ToDomain(model);
         return resource;
     }
@@ -79,30 +78,33 @@ internal class RoleRepository : IRoleRepository, IAsyncDisposable
         return roles;
     }
 
-    public async Task<Permission> AssignPermissionAsync(string id, string permissionId, CancellationToken cancel)
+    public async ValueTask<Permission> AssignPermissionAsync(
+        string id,
+        Permission permission,
+        CancellationToken cancel)
     {
         var roleModel = await GetRoleModelAsync(id, cancel);
-        if (roleModel is null) throw new EntityNotFoundException(typeof(Role), id);
-        var permission = await _permissionRepository.GetAsync(permissionId, cancel);
         var permissionModel = _permissionConverter.ToModel(permission);
         roleModel.Permissions.Add(permissionModel);
         _context.Roles.Update(roleModel);
         return permission;
     }
 
-    public async Task<IReadOnlyCollection<Permission>> GetAssignedPermissionsAsync(string id, CancellationToken cancel)
+    public async ValueTask<IReadOnlyCollection<Permission>> GetAssignedPermissionsAsync(
+        string id,
+        CancellationToken cancel)
     {
         var roleModel = await GetRoleModelAsync(id, cancel);
-        if (roleModel is null) throw new EntityNotFoundException(typeof(Role), id);
         var permissionIds = roleModel.Permissions.Select(p => p.PermissionId).ToList();
         var permissions = await _permissionRepository.GetAsync(permissionIds, cancel);
         return permissions;
     }
 
-    private async Task<RoleModel?> GetRoleModelAsync(string id, CancellationToken cancel)
+    private async Task<RoleModel> GetRoleModelAsync(string id, CancellationToken cancel)
     {
         var modelId = int.Parse(id);
         var model = await _context.Roles.Include(r => r.Permissions).SingleOrDefaultAsync(r => r.Id == modelId, cancel);
+        if (model is null) throw new EntityNotFoundException(typeof(Role), id);
         return model;
     }
 }

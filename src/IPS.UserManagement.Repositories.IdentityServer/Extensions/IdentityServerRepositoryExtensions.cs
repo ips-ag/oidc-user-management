@@ -1,12 +1,10 @@
 ﻿using Duende.IdentityServer.EntityFramework.Storage;
 using IPS.UserManagement.Domain.Permissions;
 using IPS.UserManagement.Domain.Resources;
-using IPS.UserManagement.Domain.Users;
 using IPS.UserManagement.Repositories.IdentityServer.Permissions;
 using IPS.UserManagement.Repositories.IdentityServer.Permissions.Converters;
 using IPS.UserManagement.Repositories.IdentityServer.Resources;
 using IPS.UserManagement.Repositories.IdentityServer.Resources.Converters;
-using IPS.UserManagement.Repositories.IdentityServer.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,8 +28,6 @@ public static class IdentityServerRepositoryExtensions
         // permissions
         services.AddScoped<IPermissionRepository, PermissionRepository>();
         services.AddSingleton<PermissionConverter>();
-        // users
-        services.AddScoped<IUserRepository, UserRepository>();
         return services;
     }
 }
