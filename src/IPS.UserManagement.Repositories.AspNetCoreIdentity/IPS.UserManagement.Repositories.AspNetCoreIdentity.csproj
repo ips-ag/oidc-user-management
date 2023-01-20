@@ -18,4 +18,8 @@
     <ProjectReference Include="..\IPS.UserManagement.Domain\IPS.UserManagement.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="EntityFramework\Migrations" />
+  </ItemGroup>
+
 </Project>

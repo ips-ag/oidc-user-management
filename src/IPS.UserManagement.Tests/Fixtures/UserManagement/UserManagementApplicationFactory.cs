@@ -18,7 +18,6 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
 {
     private readonly HttpClient _identityServerClient;
     private readonly string _identityServerConnectionString;
-    private readonly string _userManagementConnectionString;
     private readonly string _aspNetCoreIdentityConnectionString;
     private readonly Func<ITestOutputHelper?> _testOutputHelper;
 
@@ -26,12 +25,10 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
         Func<ITestOutputHelper?> testOutputHelper,
         HttpClient identityServerClient,
         string identityServerConnectionString,
-        string userManagementConnectionString,
         string aspNetCoreIdentityConnectionString)
     {
         _identityServerClient = identityServerClient;
         _identityServerConnectionString = identityServerConnectionString;
-        _userManagementConnectionString = userManagementConnectionString;
         _aspNetCoreIdentityConnectionString = aspNetCoreIdentityConnectionString;
         _testOutputHelper = testOutputHelper;
     }
@@ -71,7 +68,6 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
                             new Dictionary<string, string?>
                             {
                                 ["ConnectionStrings:IdentityServer"] = _identityServerConnectionString,
-                                ["ConnectionStrings:UserManagement"] = _userManagementConnectionString,
                                 ["ConnectionStrings:AspNetCoreIdentity"] = _aspNetCoreIdentityConnectionString
                             })
                         .AddEnvironmentVariables();
@@ -82,7 +78,7 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
                     services.AddSingleton(_ => _identityServerClient);
                     services.AddSingleton<IConfigureOptions<AuthenticationOptions>, ConfigureAuthenticationOptions>();
                     services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
-                    services.AddScoped<IDataSeed, DataSeed>();
+                    services.AddHostedService<DataSeed>();
                 });
         base.ConfigureWebHost(builder);
     }

@@ -24,7 +24,6 @@ public sealed class HostFixture : IAsyncDisposable
 
     public ITestOutputHelper? TestOutputHelper { private get; set; }
     private string IdentityServerConnectionString => _sqlServerLazy.Value.IdentityServerConnectionString;
-    private string UserManagementConnectionString => _sqlServerLazy.Value.UserManagementConnectionString;
     private string AspNetCoreIdentityConnectionString => _sqlServerLazy.Value.AspNetCoreIdentityConnectionString;
 
     public HostFixture()
@@ -41,7 +40,6 @@ public sealed class HostFixture : IAsyncDisposable
                 () => TestOutputHelper,
                 IdentityServerClient,
                 IdentityServerConnectionString,
-                UserManagementConnectionString,
                 AspNetCoreIdentityConnectionString));
         _erpLazy = new Lazy<ErpSystemApplicationFactory>(
             () => new ErpSystemApplicationFactory(

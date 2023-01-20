@@ -109,6 +109,12 @@ internal class PermissionRepository : IPermissionRepository, IAsyncDisposable
         return permissions;
     }
 
+    public async ValueTask<Permission> GetByNameAsync(string name, CancellationToken cancel)
+    {
+        var model = await _dbContext.ApiScopes.SingleAsync(s => s.Name == name, cancel);
+        return _converter.ToDomain(model);
+    }
+
     private async Task<ApiResource> GetResourceModelAsync(string id, CancellationToken cancel)
     {
         var modelId = int.Parse(id);
