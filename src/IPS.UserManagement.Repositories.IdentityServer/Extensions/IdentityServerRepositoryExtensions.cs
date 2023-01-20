@@ -15,13 +15,17 @@ public static class IdentityServerRepositoryExtensions
 {
     public static IServiceCollection AddIdentityServerRepositories(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        bool addConfigurationContext = true)
     {
         // identity server
-        var connectionString = configuration.GetConnectionString("IdentityServer") ??
-            throw new InvalidOperationException("IdentityServer ConnectionString not configured");
-        services.AddConfigurationDbContext(
-            store => store.ConfigureDbContext = builder => builder.UseSqlite(connectionString));
+        if (addConfigurationContext)
+        {
+            var connectionString = configuration.GetConnectionString("IdentityServer") ??
+                throw new InvalidOperationException("IdentityServer ConnectionString not configured");
+            services.AddConfigurationDbContext(
+                store => store.ConfigureDbContext = builder => builder.UseSqlite(connectionString));
+        }
         // resources
         services.AddScoped<IResourceRepository, ResourceRepository>();
         services.AddSingleton<ResourceConverter>();

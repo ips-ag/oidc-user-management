@@ -27,6 +27,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\IPS.UserManagement.Repositories.AspNetCoreIdentity\IPS.UserManagement.Repositories.AspNetCoreIdentity.csproj" />
+    <ProjectReference Include="..\IPS.UserManagement.Repositories.IdentityServer\IPS.UserManagement.Repositories.IdentityServer.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
