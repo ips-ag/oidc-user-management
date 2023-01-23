@@ -1,5 +1,6 @@
-﻿using IPS.UserManagement.Repositories.AspNetCoreIdentity.EntityFramework;
+﻿using Hellang.Middleware.ProblemDetails;
 using IPS.UserManagement.Tests.Fixtures.Authentication;
+using IPS.UserManagement.Tests.Fixtures.Errors;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
@@ -39,7 +40,7 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
             .ReadFrom.Configuration(ctx.Configuration)
             .Enrich.FromLogContext()
             .Enrich.WithExceptionDetails()
-            .WriteTo.TestOutput(_testOutputHelper(), restrictedToMinimumLevel: LogEventLevel.Warning);
+            .WriteTo.TestOutput(_testOutputHelper(), LogEventLevel.Warning);
     }
 
     protected override IHostBuilder? CreateHostBuilder()
@@ -78,6 +79,8 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
                     services.AddSingleton(_ => _identityServerClient);
                     services.AddSingleton<IConfigureOptions<AuthenticationOptions>, ConfigureAuthenticationOptions>();
                     services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
+                    services
+                        .AddSingleton<IPostConfigureOptions<ProblemDetailsOptions>, ConfigureProblemDetailsOptions>();
                     services.AddHostedService<DataSeed>();
                 });
         base.ConfigureWebHost(builder);
