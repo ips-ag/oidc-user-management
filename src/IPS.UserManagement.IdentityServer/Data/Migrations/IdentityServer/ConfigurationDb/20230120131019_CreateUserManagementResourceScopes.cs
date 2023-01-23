@@ -46,6 +46,7 @@ public partial class CreateUserManagementResourceScopes : Migration
                 { "resources:read", userManagement.Id }, { "resources:full", userManagement.Id },
                 { "permissions:read", userManagement.Id }, { "permissions:full", userManagement.Id },
                 { "roles:read", userManagement.Id }, { "roles:full", userManagement.Id },
+                { "users:read", userManagement.Id }, { "users:full", userManagement.Id },
                 { "permission-assignments:read", userManagement.Id },
                 { "permission-assignments:full", userManagement.Id },
                 { "role-assignments:read", userManagement.Id }, { "role-assignments:full", userManagement.Id }
@@ -86,10 +87,58 @@ public partial class CreateUserManagementResourceScopes : Migration
                     false
                 }
             });
+
+        migrationBuilder.InsertData(
+            "IdentityResources",
+            new[]
+            {
+                nameof(IdentityResource.Id), nameof(IdentityResource.Enabled), nameof(IdentityResource.Name),
+                nameof(IdentityResource.DisplayName), nameof(IdentityResource.Description),
+                nameof(IdentityResource.Required), nameof(IdentityResource.Emphasize),
+                nameof(IdentityResource.ShowInDiscoveryDocument), nameof(IdentityResource.Created),
+                nameof(IdentityResource.NonEditable)
+            },
+            new object[,]
+            {
+                { 1, true, "openid", "Your user identifier", null, true, false, true, DateTime.UtcNow, false },
+                {
+                    2, true, "profile", "User profile",
+                    "Your user profile information (first name, last name, etc.)", false, true, true,
+                    DateTime.UtcNow, false
+                },
+                { 3, true, "email", "Your email address", null, false, true, true, DateTime.UtcNow, false },
+                { 4, true, "phone", "Your phone number", null, false, true, true, DateTime.UtcNow, false }
+            });
+
+        migrationBuilder.InsertData(
+            "IdentityResourceClaims",
+            new[] { nameof(IdentityResourceClaim.IdentityResourceId), nameof(IdentityResourceClaim.Type) },
+            new object[,]
+            {
+                { 1, "sub" }, { 2, "name" }, { 2, "family_name" }, { 2, "given_name" }, { 2, "middle_name" },
+                { 2, "nickname" }, { 2, "preferred_username" }, { 2, "profile" }, { 2, "picture" },
+                { 2, "website" }, { 2, "gender" }, { 2, "birthdate" }, { 2, "zoneinfo" }, { 2, "locale" },
+                { 2, "updated_at" }, { 3, "email" }, { 3, "email_verified" }, { 4, "phone_number" },
+                { 4, "phone_number_verified" }
+            });
     }
 
     /// <inheritdoc />
     protected override void Down(MigrationBuilder migrationBuilder)
     {
+        migrationBuilder.DeleteData("ApiResources", nameof(ApiResource.Name), "usermanagement");
+        migrationBuilder.DeleteData(
+            "ApiScopes",
+            nameof(ApiScope.Name),
+            new object[]
+            {
+                "resources:read", "resources:read", "permissions:read", "permissions:read", "roles:read",
+                "roles:read", "users:read", "users:read", "permission-assignments:read",
+                "permission-assignments:read", "role-assignments:read", "role-assignments:read"
+            });
+        migrationBuilder.DeleteData(
+            "IdentityResources",
+            nameof(IdentityResource.Name),
+            new object[] { "openid", "profile", "email", "phone" });
     }
 }

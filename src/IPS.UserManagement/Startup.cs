@@ -47,12 +47,13 @@ public class Startup
         services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
         services.AddAuthorization();
         services.AddSingleton<IConfigureOptions<AuthorizationOptions>, ConfigureAuthorizationOptions>();
-        if (UseIdentityServer) services.ConfigureIdentityServer(Configuration);
 
         services
             .AddApplicationServices()
             .AddAspNetCoreIdentityRepositories(Configuration)
             .AddIdentityServerRepositories(Configuration);
+
+        if (UseIdentityServer) services.ConfigureIdentityServer(Configuration);
     }
 
     public void Configure(IApplicationBuilder app)
