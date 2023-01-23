@@ -5,7 +5,6 @@ using IPS.UserManagement.Extensions.Authentication;
 using IPS.UserManagement.Extensions.Errors;
 using IPS.UserManagement.IdentityServer.Extensions;
 using IPS.UserManagement.Repositories.AspNetCoreIdentity.Extensions;
-using IPS.UserManagement.Repositories.Extensions;
 using IPS.UserManagement.Repositories.IdentityServer.Extensions;
 using Microsoft.IdentityModel.Logging;
 using Newtonsoft.Json;
@@ -48,13 +47,13 @@ public class Startup
         services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
         services.AddAuthorization();
         services.AddSingleton<IConfigureOptions<AuthorizationOptions>, ConfigureAuthorizationOptions>();
-        if (UseIdentityServer) services.ConfigureIdentityServer(Configuration);
 
         services
             .AddApplicationServices()
-            .AddRepositories(Configuration)
             .AddAspNetCoreIdentityRepositories(Configuration)
             .AddIdentityServerRepositories(Configuration);
+
+        if (UseIdentityServer) services.ConfigureIdentityServer(Configuration);
     }
 
     public void Configure(IApplicationBuilder app)

@@ -1,11 +1,20 @@
-﻿using Duende.IdentityServer.Models;
-using IPS.UserManagement.IdentityServer.Data;
+﻿using Duende.IdentityServer.EntityFramework.DbContexts;
+using Duende.IdentityServer.EntityFramework.Mappers;
+using Duende.IdentityServer.Models;
+using Microsoft.Extensions.Hosting;
 
 namespace IPS.UserManagement.Tests.Fixtures.Identity;
 
-internal class DataSeed : IDataSeed
+internal class DataSeed : BackgroundService
 {
-    public IEnumerable<Client> GetClients()
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+
+    public DataSeed(IServiceScopeFactory serviceScopeFactory)
+    {
+        _serviceScopeFactory = serviceScopeFactory;
+    }
+
+    private IEnumerable<Client> GetClients()
     {
         return new[]
         {
@@ -37,64 +46,47 @@ internal class DataSeed : IDataSeed
                 ClientName = "ERP application",
                 RequireClientSecret = false,
                 AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                AllowedScopes =
-                {
-                    "orders:read"
-                }
+                AllowedScopes = { "orders:read" }
             }
         };
     }
 
-    public IEnumerable<IdentityResource> GetIdentityResources()
+    private IEnumerable<IdentityResource> GetIdentityResources()
     {
-        return new IdentityResource[]
-        {
-            new IdentityResources.OpenId(), new IdentityResources.Profile(), new IdentityResources.Email(),
-            new IdentityResources.Phone()
-        };
+        return Enumerable.Empty<IdentityResource>();
     }
 
-    public IEnumerable<ApiScope> GetScopes()
+    private IEnumerable<ApiScope> GetScopes()
     {
-        return new[]
-        {
-            new ApiScope("resources:read"),
-            new ApiScope("resources:full"),
-            new ApiScope("permissions:read"),
-            new ApiScope("permissions:full"),
-            new ApiScope("roles:read"),
-            new ApiScope("roles:full"),
-            new ApiScope("users:read"),
-            new ApiScope("users:full"),
-            new ApiScope("permission-assignments:read"),
-            new ApiScope("permission-assignments:full"),
-            new ApiScope("role-assignments:read"),
-            new ApiScope("role-assignments:full")
-        };
+        return Enumerable.Empty<ApiScope>();
     }
 
-    public IEnumerable<ApiResource> GetApis()
+    private IEnumerable<ApiResource> GetApis()
     {
-        return new[]
+        return Enumerable.Empty<ApiResource>();
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var services = scope.ServiceProvider;
+        var configurationContext = services.GetRequiredService<ConfigurationDbContext>();
+        foreach (var client in GetClients())
         {
-            new ApiResource("usermanagement", "User Management")
-            {
-                Scopes = new List<string>
-                {
-                    "resources:read",
-                    "resources:full",
-                    "permissions:read",
-                    "permissions:full",
-                    "roles:read",
-                    "roles:full",
-                    "users:read",
-                    "users:full",
-                    "permission-assignments:read",
-                    "permission-assignments:full",
-                    "role-assignments:read",
-                    "role-assignments:full"
-                }
-            }
-        };
+            configurationContext.Clients.Add(client.ToEntity());
+        }
+        foreach (var resource in GetIdentityResources())
+        {
+            configurationContext.IdentityResources.Add(resource.ToEntity());
+        }
+        foreach (var resource in GetScopes())
+        {
+            configurationContext.ApiScopes.Add(resource.ToEntity());
+        }
+        foreach (var resource in GetApis())
+        {
+            configurationContext.ApiResources.Add(resource.ToEntity());
+        }
+        await configurationContext.SaveChangesAsync(stoppingToken);
     }
 }

@@ -1,26 +1,32 @@
-﻿using IPS.UserManagement.Repositories.AspNetCoreIdentity.EntityFramework;
+﻿using IPS.UserManagement.Repositories.AspNetCoreIdentity.EntityFramework.DbContexts;
 using IPS.UserManagement.Repositories.AspNetCoreIdentity.EntityFramework.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Hosting;
 
 namespace IPS.UserManagement.Tests.Fixtures.UserManagement;
 
-internal class DataSeed : IDataSeed
+internal class DataSeed : BackgroundService
 {
     private readonly ILookupNormalizer _normalizer;
     private readonly IPasswordHasher<ApplicationUserModel> _passwordHasher;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public DataSeed(ILookupNormalizer normalizer, IPasswordHasher<ApplicationUserModel> passwordHasher)
+    public DataSeed(
+        ILookupNormalizer normalizer,
+        IPasswordHasher<ApplicationUserModel> passwordHasher,
+        IServiceScopeFactory serviceScopeFactory)
     {
         _normalizer = normalizer;
         _passwordHasher = passwordHasher;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public IReadOnlyCollection<ApplicationRoleModel> GetRoles()
+    private IReadOnlyCollection<ApplicationRoleModel> GetRoles()
     {
         return new List<ApplicationRoleModel>();
     }
 
-    public IReadOnlyCollection<ApplicationUserModel> GetUsers()
+    private IReadOnlyCollection<ApplicationUserModel> GetUsers()
     {
         var password = "secret";
         var bob = CreateApplicationUserModel("bob", "bob@contoso.com", password);
@@ -43,8 +49,19 @@ internal class DataSeed : IDataSeed
         return user;
     }
 
-    public IReadOnlyCollection<ApplicationRoleClaim> GetRoleClaims()
+    private IReadOnlyCollection<ApplicationRoleClaim> GetRoleClaims()
     {
         return new List<ApplicationRoleClaim>();
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var services = scope.ServiceProvider;
+        var dbContext = services.GetRequiredService<ApplicationDbContext>();
+        await dbContext.Roles.AddRangeAsync(GetRoles(), stoppingToken);
+        await dbContext.RoleClaims.AddRangeAsync(GetRoleClaims(), stoppingToken);
+        await dbContext.Users.AddRangeAsync(GetUsers(), stoppingToken);
+        await dbContext.SaveChangesAsync(stoppingToken);
     }
 }

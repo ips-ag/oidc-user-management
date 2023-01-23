@@ -29,7 +29,6 @@ public static class AspNetCoreIdentityRepositoryExtensions
         services.AddIdentity<ApplicationUserModel, ApplicationRoleModel>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
-        services.AddScoped<IDataSeed, DataSeed>();
         services.AddHostedService<MigrationExecutor>();
         // roles
         services.AddSingleton<ILookupNormalizer, LowerInvariantNormalizer>();

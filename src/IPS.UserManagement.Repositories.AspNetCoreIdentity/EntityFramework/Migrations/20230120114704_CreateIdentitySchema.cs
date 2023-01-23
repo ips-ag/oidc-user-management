@@ -60,7 +60,6 @@ namespace IPS.UserManagement.Repositories.AspNetCoreIdentity.EntityFramework.Mig
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    PermissionId = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
                     ClaimType = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     RoleId = table.Column<string>(type: "TEXT", nullable: false),
                     ClaimValue = table.Column<string>(type: "TEXT", nullable: true)
@@ -162,9 +161,9 @@ namespace IPS.UserManagement.Repositories.AspNetCoreIdentity.EntityFramework.Mig
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetRoleClaims_RoleId_PermissionId",
+                name: "IX_AspNetRoleClaims_RoleId_ClaimType",
                 table: "AspNetRoleClaims",
-                columns: new[] { "RoleId", "PermissionId" },
+                columns: new[] { "RoleId", "ClaimType" },
                 unique: true);
 
             migrationBuilder.CreateIndex(

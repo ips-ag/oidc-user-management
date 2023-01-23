@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IPS.UserManagement.Repositories.AspNetCoreIdentity.EntityFramework.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221129045317_CreateIdentitySchema")]
+    [Migration("20230120114704_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {
         /// <inheritdoc />
@@ -34,18 +34,13 @@ namespace IPS.UserManagement.Repositories.AspNetCoreIdentity.EntityFramework.Mig
                     b.Property<string>("ClaimValue")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("PermissionId")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("RoleId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoleId", "PermissionId")
+                    b.HasIndex("RoleId", "ClaimType")
                         .IsUnique();
 
                     b.ToTable("AspNetRoleClaims", (string)null);

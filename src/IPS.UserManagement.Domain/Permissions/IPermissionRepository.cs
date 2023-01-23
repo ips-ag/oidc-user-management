@@ -7,4 +7,5 @@ public interface IPermissionRepository
     ValueTask<Permission> GetAsync(string id, CancellationToken cancel);
     ValueTask<IReadOnlyCollection<Permission>> GetAsync(IReadOnlyCollection<string> ids, CancellationToken cancel);
     ValueTask<IReadOnlyCollection<Permission>> GetByResourceAsync(string resourceId, CancellationToken cancel);
+    ValueTask<Permission> GetByNameAsync(string name, CancellationToken cancel);
 }

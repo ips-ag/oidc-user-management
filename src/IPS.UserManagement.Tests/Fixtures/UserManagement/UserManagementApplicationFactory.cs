@@ -1,5 +1,6 @@
-﻿using IPS.UserManagement.Repositories.AspNetCoreIdentity.EntityFramework;
+﻿using Hellang.Middleware.ProblemDetails;
 using IPS.UserManagement.Tests.Fixtures.Authentication;
+using IPS.UserManagement.Tests.Fixtures.Errors;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
@@ -18,7 +19,6 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
 {
     private readonly HttpClient _identityServerClient;
     private readonly string _identityServerConnectionString;
-    private readonly string _userManagementConnectionString;
     private readonly string _aspNetCoreIdentityConnectionString;
     private readonly Func<ITestOutputHelper?> _testOutputHelper;
 
@@ -26,12 +26,10 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
         Func<ITestOutputHelper?> testOutputHelper,
         HttpClient identityServerClient,
         string identityServerConnectionString,
-        string userManagementConnectionString,
         string aspNetCoreIdentityConnectionString)
     {
         _identityServerClient = identityServerClient;
         _identityServerConnectionString = identityServerConnectionString;
-        _userManagementConnectionString = userManagementConnectionString;
         _aspNetCoreIdentityConnectionString = aspNetCoreIdentityConnectionString;
         _testOutputHelper = testOutputHelper;
     }
@@ -42,7 +40,7 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
             .ReadFrom.Configuration(ctx.Configuration)
             .Enrich.FromLogContext()
             .Enrich.WithExceptionDetails()
-            .WriteTo.TestOutput(_testOutputHelper(), restrictedToMinimumLevel: LogEventLevel.Warning);
+            .WriteTo.TestOutput(_testOutputHelper(), LogEventLevel.Warning);
     }
 
     protected override IHostBuilder? CreateHostBuilder()
@@ -71,7 +69,6 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
                             new Dictionary<string, string?>
                             {
                                 ["ConnectionStrings:IdentityServer"] = _identityServerConnectionString,
-                                ["ConnectionStrings:UserManagement"] = _userManagementConnectionString,
                                 ["ConnectionStrings:AspNetCoreIdentity"] = _aspNetCoreIdentityConnectionString
                             })
                         .AddEnvironmentVariables();
@@ -82,7 +79,9 @@ public class UserManagementApplicationFactory : WebApplicationFactory<Startup>
                     services.AddSingleton(_ => _identityServerClient);
                     services.AddSingleton<IConfigureOptions<AuthenticationOptions>, ConfigureAuthenticationOptions>();
                     services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
-                    services.AddScoped<IDataSeed, DataSeed>();
+                    services
+                        .AddSingleton<IPostConfigureOptions<ProblemDetailsOptions>, ConfigureProblemDetailsOptions>();
+                    services.AddHostedService<DataSeed>();
                 });
         base.ConfigureWebHost(builder);
     }

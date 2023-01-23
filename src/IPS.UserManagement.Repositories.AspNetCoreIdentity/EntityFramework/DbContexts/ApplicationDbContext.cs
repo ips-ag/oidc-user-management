@@ -34,10 +34,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUserModel, Appl
         builder.Entity<ApplicationRoleClaim>(
             roleClaim =>
             {
-                roleClaim.Property(p => p.PermissionId).IsRequired().HasMaxLength(200);
                 roleClaim.Property(p => p.Id).ValueGeneratedOnAdd();
                 roleClaim.Property(p => p.ClaimType).HasMaxLength(256).IsRequired();
-                roleClaim.HasIndex(p => new { p.RoleId, p.PermissionId }).IsUnique();
+                roleClaim.HasIndex(p => new { p.RoleId, p.ClaimType }).IsUnique();
             });
         base.OnModelCreating(builder);
     }

@@ -8,6 +8,5 @@ namespace IPS.UserManagement.Repositories.AspNetCoreIdentity.EntityFramework.Mod
 
 public class ApplicationRoleClaim : IdentityRoleClaim<string>
 {
-    public string PermissionId { get; set; }
     public override string ClaimType { get; set; }
 }

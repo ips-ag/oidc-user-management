@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Duende.IdentityServer" Version="6.2.0" />
     <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.0" />
@@ -27,7 +26,6 @@
     <ProjectReference Include="..\IPS.UserManagement.Application\IPS.UserManagement.Application.csproj" />
     <ProjectReference Include="..\IPS.UserManagement.IdentityServer\IPS.UserManagement.IdentityServer.csproj" />
     <ProjectReference Include="..\IPS.UserManagement.Repositories.AspNetCoreIdentity\IPS.UserManagement.Repositories.AspNetCoreIdentity.csproj" />
-    <ProjectReference Include="..\IPS.UserManagement.Repositories\IPS.UserManagement.Repositories.csproj" />
     <ProjectReference Include="..\IPS.UserManagement.Repositories.IdentityServer\IPS.UserManagement.Repositories.IdentityServer.csproj" />
   </ItemGroup>
 

@@ -15,18 +15,21 @@ internal class RoleRepository : IRoleRepository, IAsyncDisposable
     private readonly RoleManager<ApplicationRoleModel> _roleManager;
     private readonly ApplicationDbContext _dbContext;
     private readonly RoleConverter _roleConverter;
+    private readonly IPermissionRepository _permissionRepository;
     private readonly PermissionConverter _permissionConverter;
 
     public RoleRepository(
         RoleManager<ApplicationRoleModel> roleManager,
         RoleConverter roleConverter,
         PermissionConverter permissionConverter,
-        ApplicationDbContext dbContext)
+        ApplicationDbContext dbContext,
+        IPermissionRepository permissionRepository)
     {
         _roleManager = roleManager;
         _roleConverter = roleConverter;
         _permissionConverter = permissionConverter;
         _dbContext = dbContext;
+        _permissionRepository = permissionRepository;
     }
 
     public async ValueTask DisposeAsync()
@@ -81,7 +84,7 @@ internal class RoleRepository : IRoleRepository, IAsyncDisposable
                            .AsAsyncEnumerable()
                            .WithCancellation(cancel))
         {
-            var permission = _permissionConverter.ToDomain(model);
+            var permission = await _permissionRepository.GetByNameAsync(model.ClaimType, cancel);
             permissions.Add(permission);
         }
         return permissions;
@@ -93,12 +96,12 @@ internal class RoleRepository : IRoleRepository, IAsyncDisposable
         CancellationToken cancel)
     {
         var claimModel = await _dbContext.RoleClaims.SingleOrDefaultAsync(
-            c => c.RoleId == id && c.PermissionId == permission.Id,
+            c => c.RoleId == id && c.ClaimType == permission.Name,
             cancel);
-        if (claimModel is not null) return _permissionConverter.ToDomain(claimModel);
+        if (claimModel is not null) return permission;
         claimModel = _permissionConverter.ToModel(id, permission);
         _dbContext.RoleClaims.Add(claimModel);
-        return _permissionConverter.ToDomain(claimModel);
+        return permission;
     }
 
     private async Task<ApplicationRoleModel> GetRoleModelAsync(string id, CancellationToken cancel)
